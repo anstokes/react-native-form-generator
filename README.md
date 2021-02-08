@@ -1,36 +1,16 @@
 # react-native-form-generator
-
 Form generator using Formik and Yup, which uses a JSON schema to generate form elements, the schema rules are converted into Yup rule using the [@flipbyte/yup-schema](https://github.com/flipbyte/yup-schema) library. See the schemaExamples for examples with simple/advanced validation and form pagination.
 
-
-
 ## Quick Start Guide:
-
-
-
 Once the library is installed, it can be used like so:
 
-
-
 ### First import the generator
-
-
-
 ```javascript
-
 import {FormGenerator} from 'react-native-form-generator'
-
 ```
 
-
-
 ### Second prepare a schema (required)
-
-
-
 The schema is a JSON schema, and it has the following properties:
-
-
 
 Key  | Description | Type
 ---- |:-----------:| ----
@@ -70,7 +50,6 @@ customValidation  | Custom validation rules for "hidden", "disabled" property.  
 props             | Any other props which are passed to the custom component.                 | Object | False
 
 ### Third prepare custom library (required)
-
 The library is an object with the custom components used to render the form elements/controls. The keys match to the "type" property in the schema.
 
 ```javascript
@@ -85,13 +64,11 @@ The library is an object with the custom components used to render the form elem
 ```
 
 ### Lastly have a submitHandler (required)
-
 The submitHandler callback is sent to all form action buttons, and it depends on the user to implement what to happen. It gets called by the form asynchronously and the form runs the validation rules every time the submit action happens. The callback receives the following arguments:
 - The values of the submitted form.
 - The updated schema with the new values.
 
 ### Use <FormGenerator /> component
-
 Finally our form can be generated:
 
 ```javascript
