@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import { useField } from "formik";
-import { Text, Stylesheet } from "react-native";
+import { Text, StyleSheet } from "react-native";
 
 const FieldElement = ({ name, value, type, label, errors, library, theme, containerProps, hidden, ...props }) => {
     const [field, meta, helpers] = useField(name);
@@ -41,8 +41,7 @@ FieldElement.propTypes = {
     library: PropTypes.object,
     theme: PropTypes.object,
     containerProps: PropTypes.object,
-    hidden: PropTypes.object,
-
+    hidden: PropTypes.bool,
 }
 
 
