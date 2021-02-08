@@ -1,0 +1,96 @@
+{
+	"initialScreen": "simpleValidation",
+	"screens": {
+		"simpleValidation": {
+			"title": "Simple Validation Form",
+			"description": "A simpler form which includes simple field validation.",
+			"navigateOnSubmit": {
+				"to": "home",
+				"handler": "app"
+			},
+			"actions": {
+				"cancel": {
+					"type": "action",
+					"action": "cancel",
+					"label": "Cancel",
+					"navigateTo": "home",
+					"props": {
+						"mode": "contained"
+					}
+				},
+				"submit": {
+					"type": "submit",
+					"action": "submit",
+					"label": "Create",
+					"props": {
+						"mode": "contained"
+					}
+				}
+			},
+			"properties": {
+				"fullName": {
+					"type": "string",
+					"value": "",
+					"label": "Full Name",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"required",
+							"Name is required"
+						]
+					]
+				},
+				"email": {
+					"type": "string",
+					"label": "Email",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"email",
+							"Please enter a valid email"
+						],
+						[
+							"required",
+							"Email is required"
+						]
+					]
+				},
+				"password": {
+					"type": "string",
+					"value": "",
+					"label": "Password",
+					"props": {
+						"mode": "outlined",
+						"dense": true,
+						"secureTextEntry": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"required",
+							"Please enter a password with at least 6 characters"
+						],
+						[
+							"min",
+							6
+						]
+					]
+				}
+			}
+		}
+	}
+}
