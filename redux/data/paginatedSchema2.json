@@ -1,14 +1,31 @@
 {
 	"initialScreen": "account",
+	"routingRules": {
+		"account": [
+			{"route": "personal_info","fields": ["account__create_profile"],"values": [true]},
+			{"route": "payment_information","fields": ["account__create_profile"],"values": [false]}
+		],
+		"personal_info": [
+			{"route": "work_info","fields": ["personal_info__previous_work"],"values": [true]},
+			{"route": "payment_information","fields": ["personal_info__previous_work", "personal__info_country"],"values": [false, "UK"]}
+		],
+		"work_info": [
+			{"route": "payment_information","fields": ["personal_info__country"],"values": ["UK"]}
+		],
+		"payment_information": "home"
+	},
 	"screens": {
 		"account": {
 			"title": "Create Account",
 			"description": "Paginated form example. After the account is created, the user is sent to add payment information.",
 			"navigateOnSubmit": {
+				"to": {
 					"function": {
 						"args": "data",
-						"body": "if (data.account.create_profile) {return 'personal_info';} return 'home';"
+						"body": "return data.account.create_profile ? 'personal_info' : 'payment_information';"
 					}
+				},
+				"handler": "form"
 			},
 			"actions": {
 				"cancel": {
@@ -20,30 +37,10 @@
 						"mode": "contained"
 					}
 				},
-				"next": {
-					"type": "action",
-					"action": "next",
-					"label": "Next",
-					"rules": {
-						"hidden": {
-							"fields": ["account__create_profile"],
-							"values": [false]
-						}
-					},
-					"props": {
-						"mode": "contained"
-					}
-				},
 				"submit": {
 					"type": "submit",
 					"action": "createAccount",
 					"label": "Create",
-					"rules": {
-						"hidden": {
-							"fields": ["account__create_profile"],
-							"values": [true]
-						}
-					},
 					"props": {
 						"mode": "contained"
 					}
@@ -132,28 +129,13 @@
 			"title": "Personal Information",
 			"description": "Paginated form example. This form is shown only if the account specified to create a profile.",
 			"navigateOnSubmit": {
+				"to": {
 					"function": {
 						"args": "data",
-						"body": "if (data.personal_info.previous_work) {return 'work_history'}; if (data.personal_info.country === 'UK') {return 'payment_information'} return 'home';"
-					}
-			},
-			"actions": {
-				"back": {
-					"type": "action",
-					"action": "back",
-					"label": "Back",
-					"props": {
-						"mode": "contained"
+						"body": "return data.personal_info.previous_work ? 'work_history' : 'payment_information';"
 					}
 				},
-				"submit": {
-					"type": "submit",
-					"action": "updateProfile",
-					"label": "Update",
-					"props": {
-						"mode": "contained"
-					}
-				}
+				"handler": "form"
 			},
 			"properties": {
 				"country": {
@@ -170,7 +152,7 @@
 						],
 						[
 							"required",
-							"Country is required"
+							"Name is required"
 						]
 					]
 				},
@@ -194,28 +176,13 @@
 			"title": "Work History",
 			"description": "Paginated form example. This form is shown only if the personal details has specified that they have worked before.",
 			"navigateOnSubmit": {
-				"function": {
-					"args": "data",
-					"body": "if (data.personal_info.country == 'UK') {return 'payment_information'}; return 'home';"
-				}
-			},
-			"actions": {
-				"back": {
-					"type": "action",
-					"action": "back",
-					"label": "Back",
-					"props": {
-						"mode": "contained"
+				"to": {
+					"function": {
+						"args": "data",
+						"body": "return data.personal_info.previous_work ? 'work_history' : 'payment_information';"
 					}
 				},
-				"submit": {
-					"type": "submit",
-					"action": "updateWorkHistory",
-					"label": "Update",
-					"props": {
-						"mode": "contained"
-					}
-				}
+				"handler": "app"
 			},
 			"properties": {
 				"job_title": {
@@ -240,20 +207,24 @@
 		},
 		"payment_information": {
 			"title": "Payment Information",
-			"description": "Paginated form example. This form is shown only if create profile has been selected during account creation and the user specified they live in the UK.",
-			"navigateOnSubmit": "home",
+			"description": "Paginated form example. This form is shown only if the user specified they live in the UK.",
+			"navigateOnSubmit": {
+				"to": "home",
+				"handler": "app"
+			},
 			"actions": {
-				"back": {
+				"cancel": {
 					"type": "action",
-					"action": "back",
-					"label": "Back",
+					"action": "cancel",
+					"label": "Cancel",
+					"navigateTo": "home",
 					"props": {
 						"mode": "contained"
 					}
 				},
 				"submit": {
 					"type": "submit",
-					"action": "updatePaymentInfo",
+					"action": "addPaymentInfo",
 					"label": "Save",
 					"props": {
 						"mode": "contained"

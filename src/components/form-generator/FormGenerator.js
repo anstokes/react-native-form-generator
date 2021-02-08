@@ -11,7 +11,9 @@ import {
     getFormData,
     prepareValidationSchema,
     getCustomValidation,
-    getUpdatedSchema
+    getUpdatedSchema,
+    getHiddenState,
+    getRoute
 } from './utils';
 
 // Import: Components
@@ -21,6 +23,7 @@ import TextElement from './TextElement';
 
 
 const FormGenerator = ({ schema, library, submitHandler, theme, navigation, validateOnChange = false, validateOnMount = false }) => {
+    const [previousScreen, setPreviousScreen] = useState('');
     const [currentScreen, setCurrentScreen] = useState('');
     const [screenDetails, setScreenDetails] = useState({});
     const [formProperties, setFormProperties] = useState({});
@@ -98,21 +101,29 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                     if (typeof submitHandler === 'function') {
                         let updatedSchema = getUpdatedSchema(data, schema);
                         let navigateOnSubmit = updatedSchema.screens[currentScreen].navigateOnSubmit ? updatedSchema.screens[currentScreen].navigateOnSubmit : false;
+                        let route = false;
 
                         await submitHandler(data, updatedSchema);
 
-                        // Navigate based on the handler set, ["form" => setCurrentScreen, "app" => navigation]
-                        if (navigateOnSubmit && navigateOnSubmit.to) {
-                            switch (navigateOnSubmit.handler) {
+                        if (typeof navigateOnSubmit === 'object') {
+                            route = getRoute(data, navigateOnSubmit);
+                        }
+                        else if (typeof navigateOnSubmit === 'string') {
+                            route = navigateOnSubmit;
+                        }
+
+                        if (route) {
+                            switch (Object.keys(updatedSchema.screens).includes(route)) {
                                 default: break;
 
-                                case 'form':
-                                    setCurrentScreen(navigateOnSubmit.to);
+                                case true:
+                                    setPreviousScreen(currentScreen);
+                                    setCurrentScreen(route);
                                     break;
 
-                                case 'app':
+                                case false:
                                     if (navigation && navigation.navigate) {
-                                        navigation.navigate(navigateOnSubmit.to);
+                                        navigation.navigate(route);
                                     }
                                     else {
                                         console.warn('Failed to navigate using app navigation expected "object", instead got: ' + typeof (navigation));
@@ -178,6 +189,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                                     {schema.screens[currentScreen].actions && Object.keys(schema.screens[currentScreen].actions).map(actionName => {
                                         let button = schema.screens[currentScreen].actions[actionName];
 
+                                        // TODO button hiding/disabling based on rules
                                         return button ? (
                                             <ActionButton
                                                 key={actionName}
@@ -186,16 +198,20 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                                                 setCurrentScreen={(screen) => {
                                                     // Keep the form data fresh before changing screen
                                                     setFormData({ ...formData, [currentScreen]: values })
+                                                    setPreviousScreen(currentScreen);
                                                     setCurrentScreen(screen)
                                                 }}
-                                                navigateTo={button.navigateTo ? button.navigateTo : currentScreen}
+                                                previousScreen={previousScreen}
+                                                navigateTo={button.navigateTo ? button.navigateTo : getRoute(formData, schema.screens[currentScreen].navigateOnSubmit)}
                                                 label={button.label ? button.label : 'Missing Label'}
                                                 library={library ? library : {}}
                                                 theme={theme}
                                                 type={button.type ? button.type : 'submit'}
                                                 action={button.action ? button.action : 'submit'}
                                                 errors={errors}
-                                                validation={button.validation ? button.validation : {}}
+                                                disabled={false}
+                                                hidden={false}
+                                                rules={button.rules ? button.rules : {}}
                                                 {...button.props}
                                             />
                                         ) : null;

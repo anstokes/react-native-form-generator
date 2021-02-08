@@ -3,32 +3,20 @@ import PropTypes from 'prop-types';
 import { StyleSheet, Text } from "react-native";
 
 
-const getDisabled = (value) => {
-    switch (value) {
-        default: return false;
-
-        case 'errors':
-            if (Object.keys(errors).length > 0) {
-                return true;
-            }
-
-            break
-    }
-}
-
-
-const ActionButton = ({ submitHandler, isSubmitting, setCurrentScreen, navigateTo, label, library, theme, validation, errors, type, action, ...props }) => {
-    let disabled = getDisabled(validation.disabled);
+const ActionButton = ({ submitHandler, isSubmitting, setCurrentScreen, previousScreen, navigateTo, label, library, theme, hidden, disabled, errors, type, action, ...props }) => {
     const styles = useStyle(theme);
 
     return library[type] ? (
         React.createElement(library[type], {
             submitHandler,
             isSubmitting,
+            previousScreen,
             setCurrentScreen,
+            previousScreen,
             navigateTo,
             action,
             disabled,
+            hidden,
             label,
             ...props
         })
@@ -50,10 +38,12 @@ ActionButton.propTypes = {
     submitHandler: PropTypes.func,
     isSubmitting: PropTypes.bool.isRequired,
     setCurrentScreen: PropTypes.func,
+    previousScreen: PropTypes.string,
     navigateTo: PropTypes.string,
     type: PropTypes.string.isRequired,
     action: PropTypes.string.isRequired,
-    validation: PropTypes.object,
+    disabled: PropTypes.bool,
+    hidden: PropTypes.bool,
     label: PropTypes.string.isRequired,
     library: PropTypes.object.isRequired,
     theme: PropTypes.object,

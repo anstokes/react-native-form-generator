@@ -32,9 +32,11 @@ CustomSubmitButton.propTypes = {
     submitHandler: PropTypes.func.isRequired,
     isSubmitting: PropTypes.bool.isRequired,
     setCurrentScreen: PropTypes.func.isRequired,
-    navigateTo: PropTypes.string.isRequired,
+    previousScreen: PropTypes.string,
+    navigateTo: PropTypes.string,
     label: PropTypes.string.isRequired,
-    disabled: PropTypes.bool.isRequired,
+    disabled: PropTypes.bool,
+    hidden: PropTypes.bool,
     action: PropTypes.string.isRequired,
 };
 

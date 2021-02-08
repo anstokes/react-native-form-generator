@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from "react-native-paper";
 import { useNavigation } from '@react-navigation/native';
 
-const CustomActionButton = ({ submitHandler, isSubmitting, setCurrentScreen, navigateTo, label, disabled, action, ...props }) => {
+const CustomActionButton = ({ submitHandler, isSubmitting, setCurrentScreen, previousScreen, navigateTo, label, disabled, action, ...props }) => {
     const navigation = useNavigation();
     const [buttonDisabled, setButtonDisabled] = useState(disabled);
 
@@ -16,7 +16,13 @@ const CustomActionButton = ({ submitHandler, isSubmitting, setCurrentScreen, nav
             default: break;
 
             case 'back':
-                setCurrentScreen(navigateTo);
+                setCurrentScreen(previousScreen);
+                break;
+
+            case 'next':
+                if (navigateTo) {
+                    setCurrentScreen(navigateTo);
+                }
                 break;
 
             case 'cancel':
@@ -42,9 +48,11 @@ CustomActionButton.propTypes = {
     submitHandler: PropTypes.func.isRequired,
     isSubmitting: PropTypes.bool.isRequired,
     setCurrentScreen: PropTypes.func.isRequired,
-    navigateTo: PropTypes.string.isRequired,
+    previousScreen: PropTypes.string,
+    navigateTo: PropTypes.string,
     label: PropTypes.string.isRequired,
-    disabled: PropTypes.bool.isRequired,
+    disabled: PropTypes.bool,
+    hidden: PropTypes.bool,
     action: PropTypes.string.isRequired,
 };
 

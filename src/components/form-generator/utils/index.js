@@ -2,35 +2,35 @@
 import Rules from "@flipbyte/yup-schema";
 
 
-/**
- * Function goes through the given array to find an object with a key named "function", if found the function returns the indexes which lead to the "function".
- * It only looks down to one level of nesting.
- * 
- * @param {Array} dataArray 
- */
-const hasFunction = (dataArray) => {
-    let indexes = [];
+export const getRoute = (data, object) => {
+    // Check the data for "function"
+    if (Object.keys(object)[0] == 'function') {
+        let newFunc = new Function(object.function.args, object.function.body);
+        if (typeof newFunc === 'function') {
+            return newFunc(data);
+        }
+    }
+}
 
-    if (Array.isArray(dataArray)) {
-        dataArray.forEach((elem, index) => {
-            // Find the object and check if it has a key named function
-            if (Array.isArray(elem)) {
-                elem.forEach((nestedElem, nestedIndex) => {
-                    // Check if object with key "function" exists
-                    if (typeof nestedElem === 'object') {
-                        let keys = Object.keys(nestedElem);
 
-                        if (keys.length > 0 && keys.includes("function")) {
-                            // Store the indexes up to this point
-                            indexes = [index, nestedIndex];
-                        }
-                    }
-                })
+export const getHiddenState = (data, rules, type) => {
+    // Go through each actions and use "hidden" rules to determine visibility
+    if (rules && rules[type] && rules.fields && rules.values) {
+        rules.fields.forEach((fieldName, index) => {
+            let namesArr = fieldName.split('__');
+
+            if (namesArr[0] && namesArr[1]) {
+                let property = data[namesArr[0]] && data[namesArr[0]][namesArr[1]] ? data[namesArr[0]][namesArr[1]] : false;
+
+                // Validate against property value
+                if (!!property === rules.values[index]) {
+                    return true;
+                }
             }
         })
     }
 
-    return indexes.length > 0 ? indexes : false;
+    return false;
 }
 
 
