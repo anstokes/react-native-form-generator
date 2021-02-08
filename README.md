@@ -1,4 +1,4 @@
-��# react-native-form-generator
+# react-native-form-generator
 
 Form generator using Formik and Yup, which uses a JSON schema to generate form elements, the schema rules are converted into Yup rule using the [@flipbyte/yup-schema](https://github.com/flipbyte/yup-schema) library. See the schemaExamples for examples with simple/advanced validation and form pagination.
 
