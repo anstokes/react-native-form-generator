@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "react-native-form-generator",
-    "slug": "react-native-form-generator",
+    "name": "custom",
+    "slug": "custom",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

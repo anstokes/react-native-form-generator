@@ -1,0 +1,189 @@
+{
+	"initialScreen": "account",
+	"screens": {
+		"account": {
+			"title": "Create Account",
+			"description": "Paginated form example. After the account is created, the user is sent to add payment information.",
+			"navigateOnSubmit": {
+				"to": "payment_information",
+				"handler": "form"
+			},
+			"actions": {
+				"cancel": {
+					"type": "action",
+					"action": "cancel",
+					"label": "Cancel",
+					"navigateTo": "home",
+					"props": {
+						"mode": "contained"
+					}
+				},
+				"submit": {
+					"type": "submit",
+					"action": "createAccount",
+					"label": "Create",
+					"props": {
+						"mode": "contained"
+					}
+				}
+			},
+			"properties": {
+				"fullName": {
+					"type": "string",
+					"value": "",
+					"label": "Full Name",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"required",
+							"Name is required"
+						]
+					]
+				},
+				"email": {
+					"type": "string",
+					"label": "Email",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"email",
+							"Please enter a valid email"
+						],
+						[
+							"required",
+							"Email is required"
+						]
+					]
+				},
+				"password": {
+					"type": "string",
+					"value": "",
+					"label": "Password",
+					"props": {
+						"mode": "outlined",
+						"dense": true,
+						"secureTextEntry": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"required",
+							"Please enter a password with at least 6 characters"
+						],
+						[
+							"min",
+							6
+						]
+					]
+				}
+			}
+		},
+		"payment_information": {
+			"title": "Payment Information",
+			"description": "Paginated form example. This form is shown after an account has been created and it allows the user to add payment information.",
+			"navigateOnSubmit": {
+				"to": "home",
+				"handler": "app"
+			},
+			"actions": {
+				"cancel": {
+					"type": "action",
+					"action": "cancel",
+					"label": "Cancel",
+					"navigateTo": "home",
+					"props": {
+						"mode": "contained"
+					}
+				},
+				"submit": {
+					"type": "submit",
+					"action": "addPaymentInfo",
+					"label": "Save",
+					"props": {
+						"mode": "contained"
+					}
+				}
+			},
+			"properties": {
+				"credit_card": {
+					"type": "string",
+					"label": "Credit Card",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"matches",
+							{
+								"regex": {
+									"value": "[0-9]",
+									"flag": ""
+								}
+							},
+							"Only number characters allowed"
+						],
+						[
+							"max",
+							14,
+							"14 Characters limit"
+						]
+					]
+				},
+				"billing_address": {
+					"type": "string",
+					"label": "Billing Address",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"when",
+							"credit_card",
+							{
+								"function": {
+									"args": [
+										"value",
+										"schema"
+									],
+									"body": "return value ? schema.required('Please also provide a billing address.') : schema.notRequired();"
+								}
+							}
+						]
+					],
+					"customValidation": {
+						"hidden": {
+							"fields": [
+								"credit_card"
+							],
+							"values": [
+								""
+							]
+						}
+					}
+				}
+			}
+		}
+	}
+}
