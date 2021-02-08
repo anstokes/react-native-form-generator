@@ -27,7 +27,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
     const [formData, setFormData] = useState({});
     const [formValues, setFormValues] = useState({});
     const [validationSchema, setValidationSchema] = useState({});
-    const styles = useStyles(theme);
+    const styles = useStyles();
 
     // Effect runs when the schema is first loaded, or if it ever changes.
     // It sets the screen details, form properties, validation schema, form data, and current screen.
@@ -150,6 +150,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                                     )
                                 })}
 
+
                                 {/* Current screen form elements */}
                                 {typeof values === 'object' && Object.keys(values).map(fieldName => {
                                     let fieldProperties = formProperties[currentScreen][fieldName];
@@ -166,9 +167,12 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                                             disabled={!!(Array.isArray(customValidation.disabled) && customValidation.disabled.includes(fieldName)) || isSubmitting}
                                             {...fieldProperties.props}
                                             library={library}
+                                            theme={theme}
                                         />
                                     ) : null;
                                 })}
+
+
                                 {/* Current screen actions */}
                                 <View style={styles.actionsWrapper}>
                                     {schema.screens[currentScreen].actions && Object.keys(schema.screens[currentScreen].actions).map(actionName => {
@@ -187,6 +191,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                                                 navigateTo={button.navigateTo ? button.navigateTo : currentScreen}
                                                 label={button.label ? button.label : 'Missing Label'}
                                                 library={library ? library : {}}
+                                                theme={theme}
                                                 type={button.type ? button.type : 'submit'}
                                                 action={button.action ? button.action : 'submit'}
                                                 errors={errors}
@@ -206,7 +211,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
 };
 
 
-const useStyles = (theme) => (StyleSheet.create({
+const useStyles = () => (StyleSheet.create({
     actionsWrapper: {
         display: 'flex',
         flexDirection: 'row',

@@ -28,8 +28,8 @@ const useStyle = (theme) => {
             padding: 8
         },
         text: {
-            color: theme.colors && theme.colors.text ? theme.colors.text : (theme.dark ? 'white' : 'black'),
-            fontFamily: theme.fonts && theme.fonts.regular && theme.fonts.regular.fontFamily ? theme.fonts.regular.fontFamily : "Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+            color: theme && theme.colors && theme.colors.text ? theme.colors.text : 'black',
+            fontFamily: theme && theme.fonts && theme.fonts.regular && theme.fonts.regular.fontFamily ? theme.fonts.regular.fontFamily : "Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif"
         },
         title: {
             fontSize: 18,

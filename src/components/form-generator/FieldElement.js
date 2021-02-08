@@ -1,10 +1,11 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import { useField } from "formik";
-import { Text } from "react-native-paper";
+import { Text, StyleSheet } from "react-native";
 
-const FieldElement = ({ name, value, type, label, errors, library, containerProps, hidden, ...props }) => {
+const FieldElement = ({ name, value, type, label, errors, library, theme, containerProps, hidden, ...props }) => {
     const [field, meta, helpers] = useField(name);
+    const styles = useStyle(theme);
 
     return library[type] ? (
         React.createElement(library[type], {
@@ -17,8 +18,19 @@ const FieldElement = ({ name, value, type, label, errors, library, containerProp
             changeHandler: helpers.setValue,
             ...props
         })
-    ) : <Text>Missing {type} input from library.</Text>
+    ) : <Text style={styles.text}>Missing {type} input from library.</Text>
 };
+
+
+const useStyle = (theme) => {
+    return StyleSheet.create({
+        text: {
+            color: theme && theme.colors && theme.colors.text ? theme.colors.primary : 'black',
+            fontFamily: theme && theme.fonts && theme.fonts.regular && theme.fonts.regular.fontFamily ? theme.fonts.regular.fontFamily : "Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+        },
+    })
+}
+
 
 FieldElement.propTypes = {
     name: PropTypes.string.isRequired,
@@ -26,6 +38,10 @@ FieldElement.propTypes = {
     label: PropTypes.string,
     type: PropTypes.string.isRequired,
     errors: PropTypes.object.isRequired,
+    library: PropTypes.object,
+    theme: PropTypes.object,
+    containerProps: PropTypes.object,
+    hidden: PropTypes.bool,
 }
 
 
