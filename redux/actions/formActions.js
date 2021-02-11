@@ -4,7 +4,6 @@ import {
     FORM_ACTION_FULFILLED,
     FORM_ACTION_REJECTED,
     FORM_ACTION_FETCH_SCHEMA,
-    FORM_ACTION_UPDATE_SCHEMA
 } from './types';
 
 // Import: Util functions
@@ -12,6 +11,7 @@ import { store } from "../store";
 import simpleSchema from '../data/simpleSchema.json';
 import advancedSchema from '../data/advancedSchema.json';
 import paginatedSchema from '../data/paginatedSchema.json';
+import allElementsSchema from '../data/allElementsSchema.json';
 
 
 const schema = {
@@ -195,7 +195,7 @@ export const fetchFormSchema = () => {
     try {
         store.dispatch({
             type: FORM_ACTION_FETCH_SCHEMA,
-            payload: { schema: { simpleSchema, advancedSchema, paginatedSchema } }
+            payload: { schema: { simpleSchema, advancedSchema, paginatedSchema, allElementsSchema } }
         })
     }
     catch (e) {

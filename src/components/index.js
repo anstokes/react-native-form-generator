@@ -5,5 +5,7 @@ import CustomTextInput from "./CustomTextInput";
 import CustomImagePicker from "./CustomImagePicker";
 import CustomActionButton from "./CustomActionButton";
 import CustomSubmitButton from "./CustomSubmitButton";
+import CustomAudioRecorder from "./CustomAudioRecorder";
+import CustomCamera from "./CustomCamera";
 
-export { CustomTextInput, CustomImagePicker, CustomCheckbox, CustomSwitch, CustomRadio, CustomActionButton, CustomSubmitButton };
+export { CustomTextInput, CustomImagePicker, CustomCheckbox, CustomSwitch, CustomRadio, CustomActionButton, CustomSubmitButton, CustomAudioRecorder, CustomCamera };

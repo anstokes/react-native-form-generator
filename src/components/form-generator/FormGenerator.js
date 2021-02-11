@@ -12,7 +12,6 @@ import {
     prepareValidationSchema,
     getCustomValidation,
     getUpdatedSchema,
-    getHiddenState,
     getRoute
 } from './utils';
 
@@ -30,10 +29,11 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
     const [formData, setFormData] = useState({});
     const [formValues, setFormValues] = useState({});
     const [validationSchema, setValidationSchema] = useState({});
+    const [endScreen, setEndScreen] = useState({});
     const styles = useStyles();
 
     // Effect runs when the schema is first loaded, or if it ever changes.
-    // It sets the screen details, form properties, validation schema, form data, and current screen.
+    // It sets the screen details, form properties, validation schema, form data, current screen, and end screen details.
     useEffect(() => {
         if (Object.keys(schema).length > 0 && typeof schema.screens === 'object') {
             let initialScreen = false;
@@ -47,6 +47,12 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                 initialScreen = Object.keys(schema.screens)[0];
             }
 
+            // Set the default end screen object
+            if (schema.screens && schema.screens.end) {
+                setEndScreen(schema.screens.end)
+            }
+
+            // Set the initial screen details
             if (initialScreen) {
                 setScreenDetails({
                     // The current screen title, or null
@@ -59,6 +65,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                 setFormProperties(properties);
                 setValidationSchema(prepareValidationSchema(properties));
                 setFormData(getFormData(properties));
+                setPreviousScreen(initialScreen);
                 setCurrentScreen(initialScreen);
             }
         }
@@ -73,44 +80,45 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
             // Set the new screen details
             setScreenDetails({
                 // The current screen title, or null
-                title: typeof schema.screens[currentScreen].title ? schema.screens[currentScreen].title : null,
+                title: typeof schema.screens[currentScreen].title === 'string' ? schema.screens[currentScreen].title : null,
 
                 // The current screen description, or null
                 description: typeof schema.screens[currentScreen].description === 'string' ? schema.screens[currentScreen].description : null,
+
+                // The style which applies to the screen content wrapper
+                contentContainerStyle: schema.screens[currentScreen].contentContainerStyle ? schema.screens[currentScreen].contentContainerStyle : null
             });
 
             // Set the form values, used to reinitialize the form with the new fields
-            setFormValues(formData[currentScreen]);
+            if (formData[currentScreen]) {
+                setFormValues(formData[currentScreen]);
+            }
+            else {
+                setFormValues({});
+            }
         }
     }, [currentScreen])
 
 
     // Return the Form for the current screen
-    return (Object.keys(formValues).length > 0) ? (
+    return schema.screens[currentScreen] ? (
         <Formik
             initialValues={formValues}
             enableReinitialize={true}
-            validationSchema={validationSchema[currentScreen]}
+            validationSchema={validationSchema[currentScreen] ? validationSchema[currentScreen] : null}
             onSubmit={async (values, actions) => {
                 // Run the submit callback with the form data and the updated schema
                 if (currentScreen) {
                     let data = { ...formData, [currentScreen]: values };
                     setFormData(data);
 
-                    // Run submit handler callback
+                    // Run submit handler callback, and redirect the user
                     if (typeof submitHandler === 'function') {
                         let updatedSchema = getUpdatedSchema(data, schema);
                         let navigateOnSubmit = updatedSchema.screens[currentScreen].navigateOnSubmit ? updatedSchema.screens[currentScreen].navigateOnSubmit : false;
-                        let route = false;
+                        let route = getRoute(data, navigateOnSubmit, endScreen, setEndScreen);
 
                         await submitHandler(data, updatedSchema);
-
-                        if (typeof navigateOnSubmit === 'object') {
-                            route = getRoute(data, navigateOnSubmit);
-                        }
-                        else if (typeof navigateOnSubmit === 'string') {
-                            route = navigateOnSubmit;
-                        }
 
                         if (route) {
                             switch (Object.keys(updatedSchema.screens).includes(route)) {
@@ -138,45 +146,26 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
             validateOnChange={validateOnChange}
             validateOnMount={validateOnMount}
         >
-            {({ values, handleChange, handleSubmit, errors, isSubmitting, ...rest }) => {
+            {({ values, ...form }) => {
                 // The custom validation rules, with their related fields
                 const customValidation = getCustomValidation(values, formProperties, formData);
-                // console.log(errors);
+                // console.log(form.errors);
 
-                return typeof formProperties[currentScreen] === 'object' && Object.keys(formProperties[currentScreen]).length > 0 ? (
+                // console.log(customValidation);
+
+                return (
                     <Fragment>
                         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-                            <ScrollView>
+                            <ScrollView contentContainerStyle={screenDetails.contentContainerStyle ? { ...screenDetails.contentContainerStyle } : {}}>
+
                                 {/* Current screen title and description if set */}
                                 {typeof screenDetails === 'object' && Object.keys(screenDetails).map(key => {
-                                    return (
+                                    return ['title', 'description'].includes(key) && screenDetails[key] ? (
                                         <TextElement
                                             key={key}
-                                            value={screenDetails[key]}
+                                            value={screenDetails[key] ? screenDetails[key] : ''}
                                             type={key}
-                                            errors={errors}
-                                            library={library}
-                                            theme={theme}
-                                        />
-                                    )
-                                })}
-
-
-                                {/* Current screen form elements */}
-                                {typeof values === 'object' && Object.keys(values).map(fieldName => {
-                                    let fieldProperties = formProperties[currentScreen][fieldName];
-
-                                    return fieldProperties ? (
-                                        <FieldElement
-                                            key={fieldName}
-                                            type={fieldProperties.type}
-                                            name={fieldName}
-                                            label={fieldProperties.label}
-                                            value={values[fieldName] ? values[fieldName] : ''}
-                                            errors={errors}
-                                            hidden={!!(Array.isArray(customValidation.hidden) && customValidation.hidden.includes(fieldName))}
-                                            disabled={!!(Array.isArray(customValidation.disabled) && customValidation.disabled.includes(fieldName)) || isSubmitting}
-                                            {...fieldProperties.props}
+                                            errors={form.errors}
                                             library={library}
                                             theme={theme}
                                         />
@@ -184,34 +173,57 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                                 })}
 
 
+                                {/* Current screen form elements */}
+                                {formProperties[currentScreen] && Object.keys(values).map(fieldName => {
+                                    let fieldProperties = formProperties[currentScreen][fieldName] ? formProperties[currentScreen][fieldName] : false;
+                                    let hidden = !!(Array.isArray(customValidation.hidden) && customValidation.hidden.includes(fieldName));
+
+                                    return fieldProperties && !hidden && (
+                                        <FieldElement
+                                            key={fieldName}
+                                            type={fieldProperties.type}
+                                            name={fieldName}
+                                            label={fieldProperties.label}
+                                            value={values[fieldName] ? values[fieldName] : ''}
+                                            errors={form.errors}
+                                            hidden={hidden}
+                                            disabled={!!(Array.isArray(customValidation.disabled) && customValidation.disabled.includes(fieldName)) || form.isSubmitting}
+                                            {...fieldProperties.props}
+                                            library={library}
+                                            theme={theme}
+                                        />
+                                    );
+                                })}
+
+
                                 {/* Current screen actions */}
                                 <View style={styles.actionsWrapper}>
                                     {schema.screens[currentScreen].actions && Object.keys(schema.screens[currentScreen].actions).map(actionName => {
                                         let button = schema.screens[currentScreen].actions[actionName];
+                                        let navigateOnSubmit = schema.screens[currentScreen].navigateOnSubmit && schema.screens[currentScreen].navigateOnSubmit;
 
-                                        // TODO button hiding/disabling based on rules
                                         return button ? (
                                             <ActionButton
                                                 key={actionName}
-                                                submitHandler={handleSubmit}
-                                                isSubmitting={isSubmitting}
+                                                form={{
+                                                    ...form,
+                                                    allData: formData,
+                                                    navigateOnSubmit,
+                                                    currentScreen,
+                                                    previousScreen,
+                                                }}
                                                 setCurrentScreen={(screen) => {
                                                     // Keep the form data fresh before changing screen
                                                     setFormData({ ...formData, [currentScreen]: values })
                                                     setPreviousScreen(currentScreen);
                                                     setCurrentScreen(screen)
                                                 }}
-                                                previousScreen={previousScreen}
-                                                navigateTo={button.navigateTo ? button.navigateTo : getRoute(formData, schema.screens[currentScreen].navigateOnSubmit)}
+                                                navigateTo={button.navigateTo ? button.navigateTo : () => getRoute(formData, navigateOnSubmit, endScreen, setEndScreen)}
                                                 label={button.label ? button.label : 'Missing Label'}
                                                 library={library ? library : {}}
                                                 theme={theme}
                                                 type={button.type ? button.type : 'submit'}
                                                 action={button.action ? button.action : 'submit'}
-                                                errors={errors}
-                                                disabled={false}
-                                                hidden={false}
-                                                rules={button.rules ? button.rules : {}}
                                                 {...button.props}
                                             />
                                         ) : null;
@@ -220,7 +232,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                             </ScrollView>
                         </TouchableWithoutFeedback>
                     </Fragment>
-                ) : null;
+                );
             }}
         </Formik>
     ) : null;
@@ -245,5 +257,6 @@ FormGenerator.propTypes = {
     theme: PropTypes.object,
     navigation: PropTypes.object,
 };
+
 
 export default FormGenerator;

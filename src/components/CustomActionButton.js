@@ -3,30 +3,46 @@ import PropTypes from 'prop-types';
 import { Button } from "react-native-paper";
 import { useNavigation } from '@react-navigation/native';
 
-const CustomActionButton = ({ submitHandler, isSubmitting, setCurrentScreen, previousScreen, navigateTo, label, disabled, action, ...props }) => {
+const CustomActionButton = ({ form, setCurrentScreen, navigateTo, label, action, ...props }) => {
     const navigation = useNavigation();
-    const [buttonDisabled, setButtonDisabled] = useState(disabled);
+    const [buttonDisabled, setButtonDisabled] = useState(false);
 
+    // Disable the button when form is submitting
     useEffect(() => {
-        setButtonDisabled(isSubmitting);
-    }, [isSubmitting]);
+        if (action !== 'cancel') {
+            setButtonDisabled(form.isSubmitting);
+        }
+    }, [form.isSubmitting]);
+
+    // Disable the button if there are any errors
+    useEffect(() => {
+        if (typeof form.errors === 'object' && action !== 'cancel') {
+            setButtonDisabled(Object.keys(form.errors).length > 0);
+        }
+    }, [form.errors])
 
     const handlePress = () => {
+        let screen = typeof navigateTo === 'function' ? navigateTo() : navigateTo;
+
         switch (action) {
-            default: break;
+            default:
+                form.validateForm().then(errors => {
+                    if (Object.keys(errors).length > 0) {
+                        console.log(errors);
+                    }
+                    else {
+                        setCurrentScreen(screen);
+                    }
+                });
+                break;
 
             case 'back':
-                setCurrentScreen(previousScreen);
+                setCurrentScreen(form.previousScreen)
                 break;
 
-            case 'next':
-                if (navigateTo) {
-                    setCurrentScreen(navigateTo);
-                }
-                break;
-
+            case 'finish':
             case 'cancel':
-                navigation.navigate(navigateTo);
+                navigation.navigate(screen);
                 break;
         }
     }
@@ -45,14 +61,9 @@ const CustomActionButton = ({ submitHandler, isSubmitting, setCurrentScreen, pre
 
 
 CustomActionButton.propTypes = {
-    submitHandler: PropTypes.func.isRequired,
-    isSubmitting: PropTypes.bool.isRequired,
-    setCurrentScreen: PropTypes.func.isRequired,
-    previousScreen: PropTypes.string,
-    navigateTo: PropTypes.string,
+    form: PropTypes.object.isRequired,
+    navigateTo: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     label: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
-    hidden: PropTypes.bool,
     action: PropTypes.string.isRequired,
 };
 

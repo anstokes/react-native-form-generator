@@ -8,7 +8,7 @@ import { useTheme } from 'react-native-paper';
 import FormGenerator from '../components/form-generator/FormGenerator';
 
 
-const SimpleFormScreen = ({ form: { schema }, navigation }) => {
+const AllElementsFormScreen = ({ form: { schema }, navigation }) => {
 
     const submitHandler = (values, updatedSchema) => {
         console.log(values, updatedSchema);
@@ -16,16 +16,16 @@ const SimpleFormScreen = ({ form: { schema }, navigation }) => {
         return new Promise(resolve => {
             setTimeout(() => {
                 resolve('submitted');
-            }, 2000);
+            }, 500);
         });
     }
 
     const theme = useTheme();
 
-    return schema.simpleSchema ? (
+    return schema.allElementsSchema ? (
         <View style={coreStyles.container}>
             <FormGenerator
-                schema={schema.simpleSchema}
+                schema={schema.allElementsSchema}
                 library={{
                     string: CustomTextInput,
                     switch: CustomSwitch,
@@ -45,7 +45,7 @@ const SimpleFormScreen = ({ form: { schema }, navigation }) => {
     ) : null;
 };
 
-SimpleFormScreen.propTypes = {
+AllElementsFormScreen.propTypes = {
     form: PropTypes.object.isRequired,
 };
 
@@ -55,4 +55,4 @@ const mapStateToProps = ({ form }) => ({
 
 const mapDispatchToProps = {}
 
-export default connect(mapStateToProps, mapDispatchToProps)(SimpleFormScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(AllElementsFormScreen);

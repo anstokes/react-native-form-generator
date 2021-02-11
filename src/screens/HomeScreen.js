@@ -13,6 +13,7 @@ const HomeScreen = ({ navigation }) => {
                 <Button mode={'contained'} style={{ marginBottom: 8 }} onPress={() => navigation.navigate('simple_form')}>Simple Validation</Button>
                 <Button mode={'contained'} style={{ marginBottom: 8 }} onPress={() => navigation.navigate('advanced_form')}>Advanced Validation</Button>
                 <Button mode={'contained'} style={{ marginBottom: 8 }} onPress={() => navigation.navigate('paginated_form')}>Paginated Advanced Validation</Button>
+                <Button mode={'contained'} style={{ marginBottom: 8 }} onPress={() => navigation.navigate('allElements_form')}>All Elements</Button>
             </View>
         </View>
     );

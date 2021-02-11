@@ -161,7 +161,7 @@
                                         "newCheckbox",
                                         "schema"
                                     ],
-                                    "body": "return newCheckbox && newAccount ? schema.matches(/second/, {message: 'Only second allowed', excludeEmptyString: true}) : schema.matches(/.*/);"
+                                    "body": "return newCheckbox && newAccount ? schema.matches(/second/, {description: 'Only second allowed', excludeEmptyString: true}) : schema.matches(/.*/);"
                                 }
                             }
                         ]

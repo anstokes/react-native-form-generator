@@ -17,7 +17,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from '@react-navigation/stack';
 
 // Import: Screens
-import { HomeScreen, AdvancedFormScreen, SimpleFormScreen, PaginatedFormScreen } from "./screens";
+import { HomeScreen, AdvancedFormScreen, SimpleFormScreen, PaginatedFormScreen, AllElementsFormScreen } from "./screens";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -61,6 +61,13 @@ const Main = (props) => {
                             component={PaginatedFormScreen}
                             options={{
                                 title: 'Paginated & Advanced Validation'
+                            }}
+                        />
+                        <Stack.Screen
+                            name={'allElements_form'}
+                            component={AllElementsFormScreen}
+                            options={{
+                                title: 'All Elements Form'
                             }}
                         />
                     </Stack.Navigator>

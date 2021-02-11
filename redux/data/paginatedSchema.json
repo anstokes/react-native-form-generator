@@ -7,7 +7,7 @@
 			"navigateOnSubmit": {
 					"function": {
 						"args": "data",
-						"body": "if (data.account.create_profile) {return 'personal_info';} return 'home';"
+						"body": "if (data.account.create_profile) {return 'personal_info';} return {screen: 'end', routeParams: {redirect: {finish: 'home'}, title: 'Custom Title', description: 'Redirected from account screen.', actions: ['finish', 'fillProfile']}};"
 					}
 			},
 			"actions": {
@@ -24,26 +24,6 @@
 					"type": "action",
 					"action": "next",
 					"label": "Next",
-					"rules": {
-						"hidden": {
-							"fields": ["account__create_profile"],
-							"values": [false]
-						}
-					},
-					"props": {
-						"mode": "contained"
-					}
-				},
-				"submit": {
-					"type": "submit",
-					"action": "createAccount",
-					"label": "Create",
-					"rules": {
-						"hidden": {
-							"fields": ["account__create_profile"],
-							"values": [true]
-						}
-					},
 					"props": {
 						"mode": "contained"
 					}
@@ -130,11 +110,11 @@
 		},
 		"personal_info": {
 			"title": "Personal Information",
-			"description": "Paginated form example. This form is shown only if the account specified to create a profile.",
+			"description": "Paginated form example. This form is shown only if the account specified to create a profile, or user clicked to fill details after they created their account.",
 			"navigateOnSubmit": {
 					"function": {
 						"args": "data",
-						"body": "if (data.personal_info.previous_work) {return 'work_history'}; if (data.personal_info.country === 'UK') {return 'payment_information'} return 'home';"
+						"body": "if (data.personal_info.previous_work) {return 'work_history'}; if (data.personal_info.country === 'UK') {return 'payment_information'} return {screen: 'end', routeParams: {redirect: {finish: 'home'}, title: 'Custom Title', description: 'Redirected from personal_details screen.', actions: ['finish']}};"
 					}
 			},
 			"actions": {
@@ -196,7 +176,7 @@
 			"navigateOnSubmit": {
 				"function": {
 					"args": "data",
-					"body": "if (data.personal_info.country == 'UK') {return 'payment_information'}; return 'home';"
+					"body": "if (data.personal_info.country == 'UK') {return 'payment_information'}; return {screen: 'end', routeParams: {redirect: {finish: 'home'}, title: 'Custom Title', description: 'Redirected from work_history screen.', actions: ['finish']}};"
 				}
 			},
 			"actions": {
@@ -241,7 +221,12 @@
 		"payment_information": {
 			"title": "Payment Information",
 			"description": "Paginated form example. This form is shown only if create profile has been selected during account creation and the user specified they live in the UK.",
-			"navigateOnSubmit": "home",
+			"navigateOnSubmit": {
+				"function": {
+					"args" : "data",
+					"body" :"return {screen: 'end', routeParams: {redirect: {finish: 'home'}, title: 'Custom Title', description: 'Redirected from payment_info screen.', actions: ['finish']}};"
+				}
+			},
 			"actions": {
 				"back": {
 					"type": "action",
@@ -323,6 +308,37 @@
 								""
 							]
 						}
+					}
+				}
+			}
+		},
+		"end": {
+			"isEnd": true,
+			"title": "Default Title",
+			"description": "Default Description.",
+			"contentContainerStyle": {
+				"display": "flex",
+				"justifyContent": "space-between",
+				"alignItems": "center",
+				"flexGrow": 1
+			},
+			"actions": {
+				"finish": {
+					"type": "action",
+					"action": "finish",
+					"label": "Ok",
+					"navigateTo": "home",
+					"props": {
+						"mode": "contained"
+					}
+				},
+				"fillProfile": {
+					"type": "action",
+					"action": "redirect",
+					"label": "Fill Profile",
+					"navigateTo": "personal_info",
+					"props": {
+						"mode": "contained"
 					}
 				}
 			}

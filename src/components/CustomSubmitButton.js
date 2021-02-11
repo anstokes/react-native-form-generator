@@ -2,22 +2,26 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from "react-native-paper";
 
-const CustomSubmitButton = ({ submitHandler, isSubmitting, setCurrentScreen, navigateTo, label, disabled, action, ...props }) => {
+const CustomSubmitButton = ({ form, setCurrentScreen, navigateTo, label, action, ...props }) => {
     const [loading, setLoading] = useState(false);
-    const [buttonDisabled, setButtonDisabled] = useState(disabled);
+    const [buttonDisabled, setButtonDisabled] = useState(false);
 
+    // Disable and show loading animation when form is submitting
     useEffect(() => {
-        setLoading(isSubmitting);
-        setButtonDisabled(isSubmitting);
-    }, [isSubmitting]);
+        setLoading(form.isSubmitting);
+        setButtonDisabled(form.isSubmitting);
+    }, [form.isSubmitting]);
 
-    const handlePress = () => {
-        submitHandler();
-    }
+    // Disable the submit button if there are any errors present
+    useEffect(() => {
+        if (typeof form.errors === 'object') {
+            setButtonDisabled(Object.keys(form.errors).length > 0);
+        }
+    }, [form.errors])
 
     return (
         <Button
-            onPress={handlePress}
+            onPress={form.handleSubmit}
             mode={"contained"}
             disabled={buttonDisabled}
             {...props}
@@ -29,14 +33,9 @@ const CustomSubmitButton = ({ submitHandler, isSubmitting, setCurrentScreen, nav
 
 
 CustomSubmitButton.propTypes = {
-    submitHandler: PropTypes.func.isRequired,
-    isSubmitting: PropTypes.bool.isRequired,
-    setCurrentScreen: PropTypes.func.isRequired,
-    previousScreen: PropTypes.string,
-    navigateTo: PropTypes.string,
+    form: PropTypes.object.isRequired,
+    navigateTo: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     label: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
-    hidden: PropTypes.bool,
     action: PropTypes.string.isRequired,
 };
 
