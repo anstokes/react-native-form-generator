@@ -2,35 +2,58 @@
 import Rules from "@flipbyte/yup-schema";
 
 
-/**
- * Function goes through the given array to find an object with a key named "function", if found the function returns the indexes which lead to the "function".
- * It only looks down to one level of nesting.
- * 
- * @param {Array} dataArray 
- */
-const hasFunction = (dataArray) => {
-    let indexes = [];
+export const getRoute = (data, routeObj, endScreen, setEndScreen) => {
+    let route = routeObj;
 
-    if (Array.isArray(dataArray)) {
-        dataArray.forEach((elem, index) => {
-            // Find the object and check if it has a key named function
-            if (Array.isArray(elem)) {
-                elem.forEach((nestedElem, nestedIndex) => {
-                    // Check if object with key "function" exists
-                    if (typeof nestedElem === 'object') {
-                        let keys = Object.keys(nestedElem);
+    // Get the "function" result if found in data
+    if (Object.keys(route)[0] == 'function') {
+        let newFunc = new Function(route.function.args, route.function.body);
+        if (typeof newFunc === 'function') {
+            route = newFunc(data);
+        }
+    }
 
-                        if (keys.length > 0 && keys.includes("function")) {
-                            // Store the indexes up to this point
-                            indexes = [index, nestedIndex];
-                        }
-                    }
-                })
+    // Set the end screen details and action buttons
+    if (typeof route === 'object' && typeof route.screen !== 'undefined') {
+        // Set end screen details along with the route name
+        let endScreenData = {
+            title: route.routeParams.title ? route.routeParams.title : endScreen.title,
+            description: route.routeParams.description ? route.routeParams.description : endScreen.description,
+            actions: {}
+        };
+
+        Object.keys(endScreen.actions).forEach(key => {
+            if (typeof route.routeParams.actions === 'undefined' || route.routeParams.actions.includes(key)) {
+                endScreenData.actions[key] = endScreen.actions[key];
+            }
+        });
+
+        setEndScreen(endScreenData);
+        route = route.screen;
+    }
+
+    return route;
+}
+
+
+export const getHiddenState = (data, rules, type) => {
+    // Go through each actions and use "hidden" rules to determine visibility
+    if (rules && rules[type] && rules.fields && rules.values) {
+        rules.fields.forEach((fieldName, index) => {
+            let namesArr = fieldName.split('__');
+
+            if (namesArr[0] && namesArr[1]) {
+                let property = data[namesArr[0]] && data[namesArr[0]][namesArr[1]] ? data[namesArr[0]][namesArr[1]] : false;
+
+                // Validate against property value
+                if (!!property === rules.values[index]) {
+                    return true;
+                }
             }
         })
     }
 
-    return indexes.length > 0 ? indexes : false;
+    return false;
 }
 
 
@@ -89,9 +112,8 @@ export const prepareValidationSchema = (properties) => {
                 })
             }
             else {
-                console.warn('Failed to prepare screen: ' + screenName + ' validation, expected "object" instead got "' + typeof properties[screenName] + '"');
+                console.warn('Failed to prepare screen "' + screenName + '" validation, expected "object" instead got "' + typeof properties[screenName] + '"');
             }
-
 
             // Convert the validation rules to yup rules
             if (typeof validationSchema[screenName] === 'object') {
@@ -100,11 +122,11 @@ export const prepareValidationSchema = (properties) => {
                     validationSchema[screenName] = new Rules([['object'], ['shape', validationSchema[screenName]]]).toYup();
                 }
                 else {
-                    console.warn('Failed to convert screen: ' + screenName + ' validation rules to yup, no validation rules found');
+                    console.warn('Failed to convert screen "' + screenName + '" validation rules to yup, no validation rules found');
                 }
             }
             else {
-                console.warn('Failed to convert screen: ' + screenName + ' validation rules to yup, expected "object" instead got "' + typeof properties[screenName] + '"');
+                console.warn('Failed to convert screen "' + screenName + '" validation rules to yup, expected "object" instead got "' + typeof validationSchema[screenName] + '"');
             }
         })
     }
@@ -126,9 +148,9 @@ export const getProperties = (jsonSchema) => {
         Object.keys(jsonSchema.screens).forEach(screenName => {
             let screen = jsonSchema.screens[screenName];
 
-            if (typeof screen.properties === 'object') {
+            if (screen.properties && typeof screen.properties === 'object') {
                 Object.keys(screen.properties).forEach(propertyName => {
-                    let value = screen.properties[propertyName].value ? screen.properties[propertyName].value : '';
+                    let value = typeof screen.properties[propertyName].value !== 'undefined' ? screen.properties[propertyName].value : '';
 
                     // Include the value if missing
                     screen.properties[propertyName] = { ...screen.properties[propertyName], value }
@@ -136,12 +158,12 @@ export const getProperties = (jsonSchema) => {
                 });
             }
             else {
-                console.warn('Failed to get screen: ' + screenName + ' properties, expected [properties] "object" instead got "' + typeof screen.properties + '"');
+                console.warn('Failed to get screen "' + screenName + '" properties, expected "object" instead got "' + typeof screen.properties + '"');
             }
         })
     }
     else {
-        console.warn('Failed to get schema properties, expected [screens] "object" instead got "' + typeof jsonSchema.screens + '"');
+        console.warn('Failed to get schema screens properties, expected "object" instead got "' + typeof jsonSchema.screens + '"');
     }
 
     return formProperties;
@@ -175,6 +197,32 @@ export const getFormData = (properties) => {
     }
 
     return formData;
+}
+
+
+export const getActions = (jsonSchema) => {
+    let formActions = {};
+
+    if (jsonSchema && typeof jsonSchema.screens === 'object') {
+        // Go through each screen and get their related properties
+        Object.keys(jsonSchema.screens).forEach(screenName => {
+            let screen = jsonSchema.screens[screenName];
+
+            if (screen.actions && typeof screen.actions === 'object') {
+                Object.keys(screen.actions).forEach(actionName => {
+                    formActions[screenName] = { ...formActions[screenName], [actionName]: screen.actions[actionName] }
+                });
+            }
+            else {
+                console.warn('Failed to get screen "' + screenName + '" actions, expected "object" instead got "' + typeof screen.actions + '"');
+            }
+        })
+    }
+    else {
+        console.warn('Failed to get schema screens actions, expected "object" instead got "' + typeof jsonSchema.screens + '"');
+    }
+
+    return formActions;
 }
 
 
@@ -274,7 +322,7 @@ export const getUpdatedSchema = (formData, schemaObj) => {
             })
         }
         else {
-            console.warn('Failed to update screen: ' + screenName + ' properties, expected "object" instead got: "' + typeof screen.properties + '"');
+            console.warn('Failed to update screen "' + screenName + '" properties, expected "object" instead got: "' + typeof screen.properties + '"');
         }
     })
 

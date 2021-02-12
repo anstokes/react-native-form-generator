@@ -3,13 +3,12 @@ import PropTypes from 'prop-types';
 import { useField } from "formik";
 import { Text, StyleSheet } from "react-native";
 
-const FieldElement = ({ name, value, type, label, errors, library, theme, containerProps, hidden, ...props }) => {
+const FieldElement = ({ name, value, type, label, errors, library, theme, hidden, disabled, ...props }) => {
     const [field, meta, helpers] = useField(name);
     const styles = useStyle(theme);
 
     return library[type] ? (
         React.createElement(library[type], {
-            containerProps,
             name,
             value,
             label,
@@ -40,8 +39,8 @@ FieldElement.propTypes = {
     errors: PropTypes.object.isRequired,
     library: PropTypes.object,
     theme: PropTypes.object,
-    containerProps: PropTypes.object,
     hidden: PropTypes.bool,
+    disabled: PropTypes.bool,
 }
 
 
