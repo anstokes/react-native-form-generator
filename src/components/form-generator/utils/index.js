@@ -115,7 +115,6 @@ export const prepareValidationSchema = (properties) => {
                 console.warn('Failed to prepare screen "' + screenName + '" validation, expected "object" instead got "' + typeof properties[screenName] + '"');
             }
 
-
             // Convert the validation rules to yup rules
             if (typeof validationSchema[screenName] === 'object') {
                 // Only convert if there are validation rules for the current screen
@@ -127,7 +126,7 @@ export const prepareValidationSchema = (properties) => {
                 }
             }
             else {
-                console.warn('Failed to convert screen "' + screenName + '" validation rules to yup, expected "object" instead got "' + typeof properties[screenName] + '"');
+                console.warn('Failed to convert screen "' + screenName + '" validation rules to yup, expected "object" instead got "' + typeof validationSchema[screenName] + '"');
             }
         })
     }
@@ -198,6 +197,32 @@ export const getFormData = (properties) => {
     }
 
     return formData;
+}
+
+
+export const getActions = (jsonSchema) => {
+    let formActions = {};
+
+    if (jsonSchema && typeof jsonSchema.screens === 'object') {
+        // Go through each screen and get their related properties
+        Object.keys(jsonSchema.screens).forEach(screenName => {
+            let screen = jsonSchema.screens[screenName];
+
+            if (screen.actions && typeof screen.actions === 'object') {
+                Object.keys(screen.actions).forEach(actionName => {
+                    formActions[screenName] = { ...formActions[screenName], [actionName]: screen.actions[actionName] }
+                });
+            }
+            else {
+                console.warn('Failed to get screen "' + screenName + '" actions, expected "object" instead got "' + typeof screen.actions + '"');
+            }
+        })
+    }
+    else {
+        console.warn('Failed to get schema screens actions, expected "object" instead got "' + typeof jsonSchema.screens + '"');
+    }
+
+    return formActions;
 }
 
 

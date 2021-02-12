@@ -28,9 +28,10 @@ const CustomActionButton = ({ form, setCurrentScreen, navigateTo, label, action,
             default:
                 form.validateForm().then(errors => {
                     if (Object.keys(errors).length > 0) {
-                        console.log(errors);
+                        console.log('Form action: ' + action + ' errors: ' + errors);
                     }
                     else {
+                        console.log('Form navigating to: ' + screen);
                         setCurrentScreen(screen);
                     }
                 });
@@ -52,6 +53,7 @@ const CustomActionButton = ({ form, setCurrentScreen, navigateTo, label, action,
             onPress={handlePress}
             mode={"contained"}
             disabled={buttonDisabled}
+            style={{ margin: 8, flexGrow: 1 }}
             {...props}
         >
             {label}
@@ -62,6 +64,7 @@ const CustomActionButton = ({ form, setCurrentScreen, navigateTo, label, action,
 
 CustomActionButton.propTypes = {
     form: PropTypes.object.isRequired,
+    setCurrentScreen: PropTypes.func.isRequired,
     navigateTo: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     label: PropTypes.string.isRequired,
     action: PropTypes.string.isRequired,

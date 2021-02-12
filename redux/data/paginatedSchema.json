@@ -22,7 +22,7 @@
 				},
 				"next": {
 					"type": "action",
-					"action": "next",
+					"action": "updateAccount",
 					"label": "Next",
 					"props": {
 						"mode": "contained"
@@ -94,7 +94,7 @@
 				},
 				"create_profile": {
 					"type": "checkbox",
-					"values": false,
+					"value": false,
 					"label": "Create profile",
 					"props": {
 						"mode": "outlined",
@@ -126,10 +126,10 @@
 						"mode": "contained"
 					}
 				},
-				"submit": {
-					"type": "submit",
+				"next": {
+					"type": "action",
 					"action": "updateProfile",
-					"label": "Update",
+					"label": "Next",
 					"props": {
 						"mode": "contained"
 					}
@@ -188,10 +188,10 @@
 						"mode": "contained"
 					}
 				},
-				"submit": {
-					"type": "submit",
+				"next": {
+					"type": "action",
 					"action": "updateWorkHistory",
-					"label": "Update",
+					"label": "Next",
 					"props": {
 						"mode": "contained"
 					}
@@ -236,10 +236,10 @@
 						"mode": "contained"
 					}
 				},
-				"submit": {
-					"type": "submit",
+				"next": {
+					"type": "action",
 					"action": "updatePaymentInfo",
-					"label": "Save",
+					"label": "Next",
 					"props": {
 						"mode": "contained"
 					}
@@ -261,8 +261,7 @@
 							"matches",
 							{
 								"regex": {
-									"value": "[0-9]",
-									"flag": ""
+									"value": "^[0-9]+$"
 								}
 							},
 							"Only number characters allowed"
@@ -319,12 +318,12 @@
 			"contentContainerStyle": {
 				"display": "flex",
 				"justifyContent": "space-between",
-				"alignItems": "center",
 				"flexGrow": 1
 			},
+			"navigateOnSubmit": "home",
 			"actions": {
 				"finish": {
-					"type": "action",
+					"type": "submit",
 					"action": "finish",
 					"label": "Ok",
 					"navigateTo": "home",
@@ -341,7 +340,8 @@
 						"mode": "contained"
 					}
 				}
-			}
+			},
+			"properties": {}
 		}
 	}
 }

@@ -5,6 +5,7 @@
 			"title": "All possible elements",
 			"description": "A simpler form which includes all possible elements.",
 			"navigateOnSubmit": "home",
+			"alwaysShowActions": true,
 			"actions": {
 				"cancel": {
 					"type": "action",
@@ -25,6 +26,25 @@
 				}
 			},
 			"properties": {
+				"portrait": {
+					"type": "camera",
+					"label": "Take Picture",
+					"props": {},
+					"customValidation": {
+						"hidden": {
+							"fields": ["includePortrait"],
+							"values": [false]
+						}
+					}
+				},
+				"includePortrait": {
+					"type": "checkbox",
+					"label": "Include Portrait",
+					"value": false,
+					"validation": [
+						["boolean"]
+					]
+				},
 				"fullName": {
 					"type": "string",
 					"value": "",
@@ -79,32 +99,67 @@
 						],
 						[
 							"required",
-							"Please enter a password with at least 6 characters"
+							"Please enter a password"
 						],
 						[
 							"min",
-							6
+							6,
+							"Minimum 6 characters"
 						]
 					]
 				},
-				"portrait": {
-					"type": "camera",
-					"label": "Take Picture",
-					"props": {},
-					"customValidation": {
-						"hidden": {
-							"fields": ["includePortrait"],
-							"values": [false]
-						}
-					}
-				},
-				"includePortrait": {
-					"type": "checkbox",
-					"label": "Include Portrait",
-					"value": false,
+				"radioGroup": {
+					"type": "radio",
+					"label": "Test Radio Group",
+					"value": "first",
+					"props": {
+							"options": [
+									{
+											"label": "First",
+											"value": "first"
+									},
+									{
+											"label": "Second",
+											"value": "second"
+									},
+									{
+										"label": "Third",
+										"value": "third"
+								}
+							]
+					},
 					"validation": [
-						["boolean"]
+							[
+									"string"
+							],
+							[
+									"when",
+									[
+											"new_account",
+											"new_checkbox"
+									],
+									{
+											"function": {
+													"args": [
+															"newAccount",
+															"newCheckbox",
+															"schema"
+													],
+													"body": "return newCheckbox && newAccount ? schema.matches(/second/, {description: 'Only second allowed', excludeEmptyString: true}) : schema.matches(/.*/);"
+											}
+									}
+							]
 					]
+				},
+				"audioRecording": {
+					"type": "audioRecorder",
+					"label": "Record Audio",
+					"value": ""
+				},
+				"signature": {
+					"type": "signaturePad",
+					"label": "Signature",
+					"value": ""
 				}
 			}
 		}

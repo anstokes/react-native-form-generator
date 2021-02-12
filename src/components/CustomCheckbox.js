@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {View, StyleSheet} from "react-native";
-import {Text, Checkbox, useTheme} from "react-native-paper";
+import { View, StyleSheet } from "react-native";
+import { Text, Checkbox, useTheme } from "react-native-paper";
 
-const CustomCheckbox = ({containerProps, changeHandler, name, value, label, errors, hidden, ...props}) => {
+const CustomCheckbox = ({ containerProps, changeHandler, name, value, label, errors, hidden, ...props }) => {
     const theme = useTheme();
     const styles = useStyles(theme);
 
@@ -13,7 +13,7 @@ const CustomCheckbox = ({containerProps, changeHandler, name, value, label, erro
             <Checkbox
                 status={value ? 'checked' : 'unchecked'}
                 name={name}
-                onPress={() => changeHandler(value ? false : true)}
+                onPress={() => changeHandler(!value)}
                 {...props}
             />
             {errors && errors[name] ? (

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { View } from "react-native";
 import { coreStyles } from "../styles";
-import { CustomCheckbox, CustomImagePicker, CustomRadio, CustomSwitch, CustomTextInput, CustomActionButton, CustomSubmitButton, CustomCamera } from "../components";
+import { CustomCheckbox, CustomImagePicker, CustomRadio, CustomSwitch, CustomTextInput, CustomActionButton, CustomSubmitButton, CustomCamera, CustomSignaturePad, CustomAudioRecorder } from "../components";
 import { connect } from "react-redux";
 import { useTheme } from 'react-native-paper';
 import FormGenerator from '../components/form-generator/FormGenerator';
@@ -35,6 +35,8 @@ const AllElementsFormScreen = ({ form: { schema }, navigation }) => {
                     action: CustomActionButton,
                     submit: CustomSubmitButton,
                     camera: CustomCamera,
+                    signaturePad: CustomSignaturePad,
+                    audioRecorder: CustomAudioRecorder
                 }}
                 submitHandler={submitHandler}
                 validateOnChange={true}

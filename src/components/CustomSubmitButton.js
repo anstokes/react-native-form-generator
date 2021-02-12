@@ -24,6 +24,7 @@ const CustomSubmitButton = ({ form, setCurrentScreen, navigateTo, label, action,
             onPress={form.handleSubmit}
             mode={"contained"}
             disabled={buttonDisabled}
+            style={{ margin: 8, flexGrow: 1 }}
             {...props}
         >
             {loading ? 'Submitting...' : label}
@@ -34,6 +35,7 @@ const CustomSubmitButton = ({ form, setCurrentScreen, navigateTo, label, action,
 
 CustomSubmitButton.propTypes = {
     form: PropTypes.object.isRequired,
+    setCurrentScreen: PropTypes.func.isRequired,
     navigateTo: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     label: PropTypes.string.isRequired,
     action: PropTypes.string.isRequired,

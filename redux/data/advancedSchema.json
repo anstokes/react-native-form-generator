@@ -102,8 +102,7 @@
 							"matches",
 							{
 								"regex": {
-									"value": "[0-9]",
-									"flag": "g"
+									"value": "^[0-9]+$"
 								}
 							},
 							"Only number characters allowed"

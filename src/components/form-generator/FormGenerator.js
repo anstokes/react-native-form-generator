@@ -7,6 +7,7 @@ import { Formik } from 'formik';
 
 // Import: Utilities
 import {
+    getActions,
     getProperties,
     getFormData,
     prepareValidationSchema,
@@ -26,6 +27,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
     const [currentScreen, setCurrentScreen] = useState('');
     const [screenDetails, setScreenDetails] = useState({});
     const [formProperties, setFormProperties] = useState({});
+    const [formActions, setFormActions] = useState(null);
     const [formData, setFormData] = useState({});
     const [formValues, setFormValues] = useState({});
     const [validationSchema, setValidationSchema] = useState({});
@@ -38,6 +40,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
         if (Object.keys(schema).length > 0 && typeof schema.screens === 'object') {
             let initialScreen = false;
             let properties = getProperties(schema);
+            let actions = getActions(schema);
 
             // Get the initial screen based on either the initialScreen property in the schema, or the first screen name
             if (typeof schema.initialScreen === 'string') {
@@ -52,7 +55,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                 setEndScreen(schema.screens.end)
             }
 
-            // Set the initial screen details
+            // Set the initial form details, elements and actions
             if (initialScreen) {
                 setScreenDetails({
                     // The current screen title, or null
@@ -62,6 +65,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                     description: typeof schema.screens[initialScreen].description === 'string' ? schema.screens[initialScreen].description : null,
                 });
 
+                setFormActions(actions);
                 setFormProperties(properties);
                 setValidationSchema(prepareValidationSchema(properties));
                 setFormData(getFormData(properties));
@@ -77,16 +81,26 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
     // The form data stores the properties for all the screens, while the form values stores only the ones for the current screen.
     useEffect(() => {
         if (currentScreen) {
+            let title = typeof schema.screens[currentScreen].title === 'string' ? schema.screens[currentScreen].title : null;
+            let description = typeof schema.screens[currentScreen].description === 'string' ? schema.screens[currentScreen].description : null;
+            let contentContainerStyle = schema.screens[currentScreen].contentContainerStyle ? schema.screens[currentScreen].contentContainerStyle : null;
+
+            // Use end screen details (which can change) if end reached
+            if (currentScreen === 'end') {
+                title = typeof endScreen.title === 'string' ? endScreen.title : title;
+                description = typeof endScreen.description === 'string' ? endScreen.description : description;
+                contentContainerStyle = endScreen.contentContainerStyle ? endScreen.contentContainerStyle : contentContainerStyle;
+                setFormActions({ ...formActions, end: endScreen.actions ? endScreen.actions : {} });
+            }
+
             // Set the new screen details
             setScreenDetails({
                 // The current screen title, or null
-                title: typeof schema.screens[currentScreen].title === 'string' ? schema.screens[currentScreen].title : null,
-
+                title: title,
                 // The current screen description, or null
-                description: typeof schema.screens[currentScreen].description === 'string' ? schema.screens[currentScreen].description : null,
-
+                description: description,
                 // The style which applies to the screen content wrapper
-                contentContainerStyle: schema.screens[currentScreen].contentContainerStyle ? schema.screens[currentScreen].contentContainerStyle : null
+                contentContainerStyle: contentContainerStyle
             });
 
             // Set the form values, used to reinitialize the form with the new fields
@@ -118,6 +132,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                         let navigateOnSubmit = updatedSchema.screens[currentScreen].navigateOnSubmit ? updatedSchema.screens[currentScreen].navigateOnSubmit : false;
                         let route = getRoute(data, navigateOnSubmit, endScreen, setEndScreen);
 
+                        console.log('Submitting form...');
                         await submitHandler(data, updatedSchema);
 
                         if (route) {
@@ -150,7 +165,6 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                 // The custom validation rules, with their related fields
                 const customValidation = getCustomValidation(values, formProperties, formData);
                 // console.log(form.errors);
-
                 // console.log(customValidation);
 
                 return (
@@ -195,42 +209,80 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                                     );
                                 })}
 
+                                {/* Current screen actions*/}
+                                {!schema.screens[currentScreen].alwaysShowActions && (
+                                    <View style={styles.actionsWrapper}>
+                                        {formActions[currentScreen] && Object.keys(formActions[currentScreen]).map(actionName => {
+                                            let button = formActions[currentScreen][actionName];
+                                            let navigateOnSubmit = schema.screens[currentScreen].navigateOnSubmit && schema.screens[currentScreen].navigateOnSubmit;
+                                            let allData = { ...formData, [currentScreen]: { ...values } };
 
-                                {/* Current screen actions */}
-                                <View style={styles.actionsWrapper}>
-                                    {schema.screens[currentScreen].actions && Object.keys(schema.screens[currentScreen].actions).map(actionName => {
-                                        let button = schema.screens[currentScreen].actions[actionName];
-                                        let navigateOnSubmit = schema.screens[currentScreen].navigateOnSubmit && schema.screens[currentScreen].navigateOnSubmit;
-
-                                        return button ? (
-                                            <ActionButton
-                                                key={actionName}
-                                                form={{
-                                                    ...form,
-                                                    allData: formData,
-                                                    navigateOnSubmit,
-                                                    currentScreen,
-                                                    previousScreen,
-                                                }}
-                                                setCurrentScreen={(screen) => {
-                                                    // Keep the form data fresh before changing screen
-                                                    setFormData({ ...formData, [currentScreen]: values })
-                                                    setPreviousScreen(currentScreen);
-                                                    setCurrentScreen(screen)
-                                                }}
-                                                navigateTo={button.navigateTo ? button.navigateTo : () => getRoute(formData, navigateOnSubmit, endScreen, setEndScreen)}
-                                                label={button.label ? button.label : 'Missing Label'}
-                                                library={library ? library : {}}
-                                                theme={theme}
-                                                type={button.type ? button.type : 'submit'}
-                                                action={button.action ? button.action : 'submit'}
-                                                {...button.props}
-                                            />
-                                        ) : null;
-                                    })}
-                                </View>
+                                            return button ? (
+                                                <ActionButton
+                                                    key={actionName}
+                                                    form={{
+                                                        ...form,
+                                                        allData: allData,
+                                                        navigateOnSubmit,
+                                                        currentScreen,
+                                                        previousScreen,
+                                                    }}
+                                                    setCurrentScreen={(screen) => {
+                                                        // Keep the form data fresh before changing screen
+                                                        setFormData(allData)
+                                                        setPreviousScreen(currentScreen);
+                                                        setCurrentScreen(screen)
+                                                    }}
+                                                    navigateTo={button.navigateTo ? button.navigateTo : () => getRoute(allData, navigateOnSubmit, endScreen, setEndScreen)}
+                                                    label={button.label ? button.label : 'Missing Label'}
+                                                    library={library ? library : {}}
+                                                    theme={theme}
+                                                    type={button.type ? button.type : 'submit'}
+                                                    action={button.action ? button.action : 'submit'}
+                                                    {...button.props}
+                                                />
+                                            ) : null;
+                                        })}
+                                    </View>
+                                )}
                             </ScrollView>
                         </TouchableWithoutFeedback>
+                        {/* Current screen actions if alwaysShowActions is set to true */}
+                        {schema.screens[currentScreen].alwaysShowActions && (
+                            <View style={styles.actionsWrapper}>
+                                {formActions[currentScreen] && Object.keys(formActions[currentScreen]).map(actionName => {
+                                    let button = formActions[currentScreen][actionName];
+                                    let navigateOnSubmit = schema.screens[currentScreen].navigateOnSubmit && schema.screens[currentScreen].navigateOnSubmit;
+                                    let allData = { ...formData, [currentScreen]: { ...values } };
+
+                                    return button ? (
+                                        <ActionButton
+                                            key={actionName}
+                                            form={{
+                                                ...form,
+                                                allData: allData,
+                                                navigateOnSubmit,
+                                                currentScreen,
+                                                previousScreen,
+                                            }}
+                                            setCurrentScreen={(screen) => {
+                                                // Keep the form data fresh before changing screen
+                                                setFormData(allData)
+                                                setPreviousScreen(currentScreen);
+                                                setCurrentScreen(screen)
+                                            }}
+                                            navigateTo={button.navigateTo ? button.navigateTo : () => getRoute(allData, navigateOnSubmit, endScreen, setEndScreen)}
+                                            label={button.label ? button.label : 'Missing Label'}
+                                            library={library ? library : {}}
+                                            theme={theme}
+                                            type={button.type ? button.type : 'submit'}
+                                            action={button.action ? button.action : 'submit'}
+                                            {...button.props}
+                                        />
+                                    ) : null;
+                                })}
+                            </View>
+                        )}
                     </Fragment>
                 );
             }}
@@ -243,7 +295,8 @@ const useStyles = () => (StyleSheet.create({
     actionsWrapper: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'center',
     }
 }));
 
