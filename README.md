@@ -18,49 +18,54 @@ initialScreen | The key of the screen that is initially shown    | String
 screens       | Object with screens ("screen1": {...properties}) | Object
 
 
-Each screen in the screens object can have the following:
+- Each screen in the screens object can have the following:
 
-Key               | Description | Type | Required
------------------ | ----------- | :--: | :------:
-title             | The title of the current form screen, optional.      | String | False
-description       | The description of the current form screen. optional | String | False
-navigateOnSubmit  | Object with the "to" and "handler" properties.       | Object | False
-actions           | Object with actions for the current screen.          | Object | False
-properties        | Object with form elements.                           | Object | True 
+Key | Description | Type | Required
+--- | ----------- | :--: | :------:
+title                 | The title of the current form screen, optional.                    	| String           | False
+description           | The description of the current form screen. optional               	| String           | False
+navigateOnSubmit      | String or Object to redirect on submit, see paginatedSchemaExample.	| String or Object | False
+contentContainerStyle | Style for the entire form elements wrapper 													| Object           | False
+alwaysShowActions     | If true then it will render the actions outside of the scrollView  	| Boolean          | False
+actions               | Object with actions for the current screen. 												| Object           | True
+properties            | Object with form elements. 																					| Object 					 | True
+
+If a custom end screen is required to handle the final submit, or to display some information to the user, then it should be included with the "end" key. The redirect to this screen can be handled in the navigateOnSubmit, or the "navigateTo" property of action buttons. 
 
 
-Each action in the actions object can have the following:
+- Each action in the actions object can have the following:
 
 Key    | Description  | Type | Required
 ------ | ------------ | :--: | :------:
-type   | The type of the action button, should match the component in the library. | String | True
-action | The action name which is passed to the handler.                           | String | True
-label  | The label of the action button.                                           | Object | True
-props  | Any other props which are passed to the custom component.                 | Object | False
+type   			| The type of the action button, should match the component in the library. | String | True
+action 			| The action name which is passed to the handler. 													| String | True
+label  			| The label of the action button. 																					| Object | True
+navigateTo 	| The name of the screen to navigate to on button press. If no "navigateTo" is provided then the "navigateOnSubmit" will be used to get the redirect screen. | String | False
+props  			| Any other objects which are passed to the custom component. 							| Object | False
 
-Each property in the properties object can have the following:
+- Each property in the properties object can have the following:
 
 Key               | Description | Type | Required
 ----------------- | ----------- | :--: | :------:
 type              | The type of the form element, should match the component in the library.  | String | True
 value             | The initial value of the element.                                         | String | True
 label             | The label of the element.                                                 | Object | True
-validation        | The validation rules for each property.                                   | Object | False
-customValidation  | Custom validation rules for "hidden", "disabled" property.                | Object | False
+validation        | The validation rules which are converted to Yup rules.                    | Object | False
+customValidation  | Custom validation rules for "hidden", "disabled" properties.              | Object | False
 props             | Any other props which are passed to the custom component.                 | Object | False
 
 ### Third prepare custom library (required)
 The library is an object with the custom components used to render the form elements/controls. The keys match to the "type" property in the schema.
 
 ```javascript
-
-{
+const library = {
 	string: CustomTextInput,
 	radio: CustomRadioButton,
 	submit: CustomSubmitButton,
 	cancel: CustomActionButton,
+	camera: CustomCamera,
+	...
 }
-
 ```
 
 ### Lastly have a submitHandler (required)
@@ -79,9 +84,8 @@ Finally our form can be generated:
 	validateOnChange={true} // false by default
 	validateOnMount={true} 	// false by default
 	theme={useTheme()}      // Currently the theme is only used to display errors when the components are missing from the library
-	navigation={navigation} // The navigation.navigate() function is used when the navigateOnSubmit.handler is set to "app"
+	navigation={navigation} // The navigation.navigate() function is used when a screen is not found in the schema.
 />
-
 ```
 
 

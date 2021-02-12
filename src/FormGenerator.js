@@ -191,6 +191,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                                 {formProperties[currentScreen] && Object.keys(values).map(fieldName => {
                                     let fieldProperties = formProperties[currentScreen][fieldName] ? formProperties[currentScreen][fieldName] : false;
                                     let hidden = !!(Array.isArray(customValidation.hidden) && customValidation.hidden.includes(fieldName));
+                                    let disabled = !!(Array.isArray(customValidation.disabled) && customValidation.disabled.includes(fieldName)) || form.isSubmitting;
 
                                     return fieldProperties && !hidden && (
                                         <FieldElement
@@ -201,7 +202,7 @@ const FormGenerator = ({ schema, library, submitHandler, theme, navigation, vali
                                             value={values[fieldName] ? values[fieldName] : ''}
                                             errors={form.errors}
                                             hidden={hidden}
-                                            disabled={!!(Array.isArray(customValidation.disabled) && customValidation.disabled.includes(fieldName)) || form.isSubmitting}
+                                            disabled={disabled}
                                             {...fieldProperties.props}
                                             library={library}
                                             theme={theme}
