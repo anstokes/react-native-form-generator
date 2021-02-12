@@ -20,8 +20,8 @@ screens       | Object with screens ("screen1": {...properties}) | Object
 
 - Each screen in the screens object can have the following:
 
-Key | Description | Type               | Required
---- | :----------- | :----------------: | :------:
+Key                   | Description  | Type               | Required
+:-------------------: | :----------- | :----------------: | :------:
 title                 | The title of the current form screen, optional.                    	| String           | False
 description           | The description of the current form screen. optional               	| String           | False
 navigateOnSubmit      | String or Object to redirect on submit, see paginatedSchemaExample.	| String or Object | False
@@ -35,8 +35,8 @@ If a custom end screen is required to handle the final submit, or to display som
 
 - Each action in the actions object can have the following:
 
-Key    | Description  | Type       | Required
------- | :------------ | :--------: | :------:
+Key         | Description   | Type       | Required
+:---------- | :------------ | :--------: | :------:
 type   			| The type of the action button, should match the component in the library. | String | True
 action 			| The action name which is passed to the handler. 													| String | True
 label  			| The label of the action button. 																					| Object | True
@@ -45,8 +45,8 @@ props  			| Any other objects which are passed to the custom component. 							|
 
 - Each property in the properties object can have the following:
 
-Key               | Description | Type       | Required
------------------ | :----------- | :--------: | :------:
+Key               | Description  | Type       | Required
+:---------------- | :----------- | :--------: | :------:
 type              | The type of the form element, should match the component in the library.  | String | True
 value             | The initial value of the element.                                         | String | True
 label             | The label of the element.                                                 | Object | True
