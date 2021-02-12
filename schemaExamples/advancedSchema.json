@@ -4,10 +4,7 @@
 		"advancedValidation": {
 			"title": "Advanced Validation Form",
 			"description": "A more advanced form with property dependency validation. When a credit card is entered, a billing address is also requested.",
-			"navigateOnSubmit": {
-				"to": "home",
-				"handler": "app"
-			},
+			"navigateOnSubmit": "home",
 			"actions": {
 				"cancel": {
 					"type": "action",
@@ -105,8 +102,7 @@
 							"matches",
 							{
 								"regex": {
-									"value": "[0-9]",
-									"flag": "g"
+									"value": "^[0-9]+$"
 								}
 							},
 							"Only number characters allowed"

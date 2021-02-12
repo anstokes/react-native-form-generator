@@ -5,8 +5,10 @@
 			"title": "Create Account",
 			"description": "Paginated form example. After the account is created, the user is sent to add payment information.",
 			"navigateOnSubmit": {
-				"to": "payment_information",
-				"handler": "form"
+					"function": {
+						"args": "data",
+						"body": "if (data.account.create_profile) {return 'personal_info';} return {screen: 'end', routeParams: {redirect: {finish: 'home'}, title: 'Custom Title', description: 'Redirected from account screen.', actions: ['finish', 'fillProfile']}};"
+					}
 			},
 			"actions": {
 				"cancel": {
@@ -18,10 +20,10 @@
 						"mode": "contained"
 					}
 				},
-				"submit": {
-					"type": "submit",
-					"action": "createAccount",
-					"label": "Create",
+				"next": {
+					"type": "action",
+					"action": "updateAccount",
+					"label": "Next",
 					"props": {
 						"mode": "contained"
 					}
@@ -89,30 +91,155 @@
 							6
 						]
 					]
+				},
+				"create_profile": {
+					"type": "checkbox",
+					"value": false,
+					"label": "Create profile",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"boolean"
+						]
+					]
+				}
+			}
+		},
+		"personal_info": {
+			"title": "Personal Information",
+			"description": "Paginated form example. This form is shown only if the account specified to create a profile, or user clicked to fill details after they created their account.",
+			"navigateOnSubmit": {
+					"function": {
+						"args": "data",
+						"body": "if (data.personal_info.previous_work) {return 'work_history'}; if (data.personal_info.country === 'UK') {return 'payment_information'} return {screen: 'end', routeParams: {redirect: {finish: 'home'}, title: 'Custom Title', description: 'Redirected from personal_details screen.', actions: ['finish']}};"
+					}
+			},
+			"actions": {
+				"back": {
+					"type": "action",
+					"action": "back",
+					"label": "Back",
+					"props": {
+						"mode": "contained"
+					}
+				},
+				"next": {
+					"type": "action",
+					"action": "updateProfile",
+					"label": "Next",
+					"props": {
+						"mode": "contained"
+					}
+				}
+			},
+			"properties": {
+				"country": {
+					"type": "string",
+					"value": "",
+					"label": "Country",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"required",
+							"Country is required"
+						]
+					]
+				},
+				"previous_work": {
+					"type": "checkbox",
+					"value": false,
+					"label": "Previous Work",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"boolean"
+						]
+					]
+				}
+			}
+		},
+		"work_history": {
+			"title": "Work History",
+			"description": "Paginated form example. This form is shown only if the personal details has specified that they have worked before.",
+			"navigateOnSubmit": {
+				"function": {
+					"args": "data",
+					"body": "if (data.personal_info.country == 'UK') {return 'payment_information'}; return {screen: 'end', routeParams: {redirect: {finish: 'home'}, title: 'Custom Title', description: 'Redirected from work_history screen.', actions: ['finish']}};"
+				}
+			},
+			"actions": {
+				"back": {
+					"type": "action",
+					"action": "back",
+					"label": "Back",
+					"props": {
+						"mode": "contained"
+					}
+				},
+				"next": {
+					"type": "action",
+					"action": "updateWorkHistory",
+					"label": "Next",
+					"props": {
+						"mode": "contained"
+					}
+				}
+			},
+			"properties": {
+				"job_title": {
+					"type": "string",
+					"value": "",
+					"label": "Job Title",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"required",
+							"Please enter a job title"
+						]
+					]
 				}
 			}
 		},
 		"payment_information": {
 			"title": "Payment Information",
-			"description": "Paginated form example. This form is shown after an account has been created and it allows the user to add payment information.",
+			"description": "Paginated form example. This form is shown only if create profile has been selected during account creation and the user specified they live in the UK.",
 			"navigateOnSubmit": {
-				"to": "home",
-				"handler": "app"
+				"function": {
+					"args" : "data",
+					"body" :"return {screen: 'end', routeParams: {redirect: {finish: 'home'}, title: 'Custom Title', description: 'Redirected from payment_info screen.', actions: ['finish']}};"
+				}
 			},
 			"actions": {
-				"cancel": {
+				"back": {
 					"type": "action",
-					"action": "cancel",
-					"label": "Cancel",
-					"navigateTo": "home",
+					"action": "back",
+					"label": "Back",
 					"props": {
 						"mode": "contained"
 					}
 				},
-				"submit": {
-					"type": "submit",
-					"action": "addPaymentInfo",
-					"label": "Save",
+				"next": {
+					"type": "action",
+					"action": "updatePaymentInfo",
+					"label": "Next",
 					"props": {
 						"mode": "contained"
 					}
@@ -134,8 +261,7 @@
 							"matches",
 							{
 								"regex": {
-									"value": "[0-9]",
-									"flag": ""
+									"value": "^[0-9]+$"
 								}
 							},
 							"Only number characters allowed"
@@ -184,6 +310,38 @@
 					}
 				}
 			}
+		},
+		"end": {
+			"isEnd": true,
+			"title": "Default Title",
+			"description": "Default Description.",
+			"contentContainerStyle": {
+				"display": "flex",
+				"justifyContent": "space-between",
+				"flexGrow": 1
+			},
+			"navigateOnSubmit": "home",
+			"actions": {
+				"finish": {
+					"type": "submit",
+					"action": "finish",
+					"label": "Ok",
+					"navigateTo": "home",
+					"props": {
+						"mode": "contained"
+					}
+				},
+				"fillProfile": {
+					"type": "action",
+					"action": "redirect",
+					"label": "Fill Profile",
+					"navigateTo": "personal_info",
+					"props": {
+						"mode": "contained"
+					}
+				}
+			},
+			"properties": {}
 		}
 	}
 }

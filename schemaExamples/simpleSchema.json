@@ -4,10 +4,7 @@
 		"simpleValidation": {
 			"title": "Simple Validation Form",
 			"description": "A simpler form which includes simple field validation.",
-			"navigateOnSubmit": {
-				"to": "home",
-				"handler": "app"
-			},
+			"navigateOnSubmit": "home",
 			"actions": {
 				"cancel": {
 					"type": "action",

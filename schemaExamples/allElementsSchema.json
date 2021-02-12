@@ -1,0 +1,167 @@
+{
+	"initialScreen": "allElements",
+	"screens": {
+		"allElements": {
+			"title": "All possible elements",
+			"description": "A simpler form which includes all possible elements.",
+			"navigateOnSubmit": "home",
+			"alwaysShowActions": true,
+			"actions": {
+				"cancel": {
+					"type": "action",
+					"action": "cancel",
+					"label": "Cancel",
+					"navigateTo": "home",
+					"props": {
+						"mode": "contained"
+					}
+				},
+				"submit": {
+					"type": "submit",
+					"action": "submit",
+					"label": "Create",
+					"props": {
+						"mode": "contained"
+					}
+				}
+			},
+			"properties": {
+				"portrait": {
+					"type": "camera",
+					"label": "Take Picture",
+					"props": {},
+					"customValidation": {
+						"hidden": {
+							"fields": ["includePortrait"],
+							"values": [false]
+						}
+					}
+				},
+				"includePortrait": {
+					"type": "checkbox",
+					"label": "Include Portrait",
+					"value": false,
+					"validation": [
+						["boolean"]
+					]
+				},
+				"fullName": {
+					"type": "string",
+					"value": "",
+					"label": "Full Name",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"required",
+							"Name is required"
+						]
+					]
+				},
+				"email": {
+					"type": "string",
+					"label": "Email",
+					"props": {
+						"mode": "outlined",
+						"dense": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"email",
+							"Please enter a valid email"
+						],
+						[
+							"required",
+							"Email is required"
+						]
+					]
+				},
+				"password": {
+					"type": "string",
+					"value": "",
+					"label": "Password",
+					"props": {
+						"mode": "outlined",
+						"dense": true,
+						"secureTextEntry": true
+					},
+					"validation": [
+						[
+							"string"
+						],
+						[
+							"required",
+							"Please enter a password"
+						],
+						[
+							"min",
+							6,
+							"Minimum 6 characters"
+						]
+					]
+				},
+				"radioGroup": {
+					"type": "radio",
+					"label": "Test Radio Group",
+					"value": "first",
+					"props": {
+							"options": [
+									{
+											"label": "First",
+											"value": "first"
+									},
+									{
+											"label": "Second",
+											"value": "second"
+									},
+									{
+										"label": "Third",
+										"value": "third"
+								}
+							]
+					},
+					"validation": [
+							[
+									"string"
+							],
+							[
+									"when",
+									[
+											"new_account",
+											"new_checkbox"
+									],
+									{
+											"function": {
+													"args": [
+															"newAccount",
+															"newCheckbox",
+															"schema"
+													],
+													"body": "return newCheckbox && newAccount ? schema.matches(/second/, {description: 'Only second allowed', excludeEmptyString: true}) : schema.matches(/.*/);"
+											}
+									}
+							]
+					]
+				},
+				"audioRecording": {
+					"type": "audioRecorder",
+					"label": "Record Audio",
+					"value": ""
+				},
+				"signature": {
+					"type": "signaturePad",
+					"label": "Signature",
+					"value": ""
+				}
+			}
+		}
+	}
+}
