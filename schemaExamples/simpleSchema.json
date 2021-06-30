@@ -38,54 +38,71 @@
 							"string"
 						],
 						[
+                            "matches",
+                            {
+								"regex": {
+									"value": "^[a-zA-Z]+$"
+								}
+							},
+                            "Only letters allowed"
+                        ],
+						[
 							"required",
 							"Name is required"
 						]
 					]
 				},
-				"email": {
-					"type": "string",
-					"label": "Email",
-					"props": {
-						"mode": "outlined",
-						"dense": true
-					},
-					"validation": [
-						[
-							"string"
-						],
-						[
-							"email",
-							"Please enter a valid email"
-						],
-						[
-							"required",
-							"Email is required"
-						]
-					]
-				},
-				"password": {
-					"type": "string",
-					"value": "",
-					"label": "Password",
-					"props": {
-						"mode": "outlined",
-						"dense": true,
-						"secureTextEntry": true
-					},
-					"validation": [
-						[
-							"string"
-						],
-						[
-							"required",
-							"Please enter a password with at least 6 characters"
-						],
-						[
-							"min",
-							6
-						]
-					]
+				"secureDetails": {
+					"type": "group",
+					"title": "Email and password",
+					"description": "Inputs test group",
+					"properties": {
+						"email": {
+							"name": "email",
+							"type": "string",
+							"label": "Email",
+							"props": {
+								"mode": "outlined",
+								"dense": true
+							},
+							"validation": [
+								[
+									"string"
+								],
+								[
+									"email",
+									"Please enter a valid email"
+								],
+								[
+									"required",
+									"Email is required"
+								]
+							]
+						},
+						"password": {
+							"type": "string",
+							"value": "",
+							"label": "Password",
+							"props": {
+								"mode": "outlined",
+								"dense": true,
+								"secureTextEntry": true
+							},
+							"validation": [
+								[
+									"string"
+								],
+								[
+									"required",
+									"Please enter a password with at least 6 characters"
+								],
+								[
+									"min",
+									6
+								]
+							]
+						}
+					}
 				}
 			}
 		}

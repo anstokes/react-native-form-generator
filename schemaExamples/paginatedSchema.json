@@ -24,6 +24,12 @@
 					"type": "action",
 					"action": "updateAccount",
 					"label": "Next",
+					"navigateTo": {
+						"function": {
+							"args": "data",
+							"body": "if (data.account.create_profile) {return 'personal_info';} return {screen: 'end', routeParams: {redirect: {finish: 'home'}, title: 'Custom Title', description: 'Redirected from account screen.', actions: ['finish', 'fillProfile']}};"
+						}
+					},
 					"props": {
 						"mode": "contained"
 					}

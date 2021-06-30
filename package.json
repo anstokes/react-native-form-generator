@@ -1,6 +1,10 @@
 {
   "name": "react-native-form-generator",
   "version": "2021.2.12",
+  "repository": {
+    "type": "scm",
+    "url": "https://scm.anstech.co.uk/scm/repo/astokes/react-native-form-generator"
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -10,13 +14,10 @@
   },
   "dependencies": {
     "@flipbyte/yup-schema": "^0.1.5",
+    "@react-native-community/datetimepicker": "^3.4.6",
     "formik": "^2.2.6",
     "prop-types": "15.6.2",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.1.tar.gz",
-    "react-native-unimodules": "~0.12.0",
-    "react-native-web": "~0.13.12",
+    "react-native-paper": "^4.7.2",
     "yup": "^0.32.8"
   },
   "devDependencies": {

@@ -33,7 +33,7 @@
 					"customValidation": {
 						"hidden": {
 							"fields": ["includePortrait"],
-							"values": [false]
+							"values": [[false, ""]]
 						}
 					}
 				},
@@ -115,12 +115,12 @@
 					"props": {
 							"options": [
 									{
-											"label": "First",
-											"value": "first"
+										"label": "First",
+										"value": "first"
 									},
 									{
-											"label": "Second",
-											"value": "second"
+										"label": "Second",
+										"value": "second"
 									},
 									{
 										"label": "Third",
@@ -130,24 +130,24 @@
 					},
 					"validation": [
 							[
-									"string"
+								"string"
 							],
 							[
-									"when",
-									[
-											"new_account",
-											"new_checkbox"
-									],
-									{
-											"function": {
-													"args": [
-															"newAccount",
-															"newCheckbox",
-															"schema"
-													],
-													"body": "return newCheckbox && newAccount ? schema.matches(/second/, {description: 'Only second allowed', excludeEmptyString: true}) : schema.matches(/.*/);"
-											}
+								"when",
+								[
+									"new_account",
+									"new_checkbox"
+								],
+								{
+									"function": {
+										"args": [
+												"newAccount",
+												"newCheckbox",
+												"schema"
+										],
+										"body": "return newCheckbox && newAccount ? schema.matches(/second/, {description: 'Only second allowed', excludeEmptyString: true}) : schema.matches(/.*/);"
 									}
+								}
 							]
 					]
 				},

@@ -1,0 +1,85 @@
+yarn add v1.22.5
+[1/4] Resolving packages...
+[2/4] Fetching packages...
+info fsevents@1.2.13: The platform "win32" is incompatible with this module.
+info "fsevents@1.2.13" is an optional dependency and failed compatibility check. Excluding it from installation.
+info fsevents@2.3.2: The platform "win32" is incompatible with this module.
+info "fsevents@2.3.2" is an optional dependency and failed compatibility check. Excluding it from installation.
+[3/4] Linking dependencies...
+[4/4] Building fresh packages...
+success Saved lockfile.
+success Saved 69 new dependencies.
+info Direct dependencies
+├─ react-native-vector-icons@8.1.0
+└─ react-native-windows@0.64.4
+info All dependencies
+├─ @jest/create-cache-key-function@26.6.2
+├─ @react-native-windows/cli@0.64.3
+├─ @react-native-windows/find-repo-root@0.64.0
+├─ @react-native-windows/package-utils@0.64.0
+├─ @react-native-windows/telemetry@0.64.0
+├─ @react-native/assets@1.0.0
+├─ @react-native/normalize-color@1.0.0
+├─ @react-native/polyfills@1.0.0
+├─ @sideway/address@4.1.1
+├─ @sideway/formula@3.0.0
+├─ @sideway/pinpoint@2.0.0
+├─ @types/graceful-fs@4.1.5
+├─ appdirsjs@1.2.4
+├─ applicationinsights@1.8.10
+├─ array-union@1.0.2
+├─ array-uniq@1.0.3
+├─ ast-types@0.14.2
+├─ async-hook-jl@1.7.6
+├─ async-limiter@1.0.1
+├─ async-listener@0.6.10
+├─ cls-hooked@4.2.2
+├─ colors@1.4.0
+├─ continuation-local-storage@3.2.1
+├─ diagnostic-channel-publishers@0.4.4
+├─ diagnostic-channel@0.3.1
+├─ dir-glob@2.2.2
+├─ emitter-listener@1.1.2
+├─ flow-parser@0.121.0
+├─ get-monorepo-packages@1.2.0
+├─ globby@7.1.1
+├─ ignore@3.3.10
+├─ interpret@1.4.0
+├─ jest-regex-util@26.0.0
+├─ joi@17.4.0
+├─ jscodeshift@0.11.0
+├─ kleur@3.0.3
+├─ load-json-file@4.0.0
+├─ lodash.frompairs@4.0.1
+├─ lodash.isequal@4.5.0
+├─ lodash.isstring@4.0.1
+├─ lodash.omit@4.5.0
+├─ lodash.pick@4.4.0
+├─ lodash.template@4.5.0
+├─ lodash.templatesettings@4.2.0
+├─ map-age-cleaner@0.1.3
+├─ mem@4.3.0
+├─ metro-transform-worker@0.64.0
+├─ mimic-fn@2.1.0
+├─ mustache@4.2.0
+├─ neo-async@2.6.2
+├─ node-dir@0.1.17
+├─ ob1@0.64.0
+├─ p-defer@1.0.0
+├─ p-is-promise@2.1.0
+├─ path-type@3.0.0
+├─ picomatch@2.2.3
+├─ prompts@2.4.1
+├─ react-native-codegen@0.0.6
+├─ react-native-vector-icons@8.1.0
+├─ react-native-windows@0.64.4
+├─ recast@0.20.4
+├─ rechoir@0.6.2
+├─ shimmer@1.2.1
+├─ sisteransi@1.0.5
+├─ stack-chain@1.3.7
+├─ strip-bom@3.0.0
+├─ username@5.1.0
+├─ xml-parser@1.2.1
+└─ xpath@0.0.27
+Done in 22.98s.
