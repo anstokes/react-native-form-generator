@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 // Import: Components
 import {View, Platform} from 'react-native';
-import {Button} from 'react-native-paper';
+import {Button, TextInput} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 
@@ -13,9 +13,11 @@ const CustomDateTimePicker = React.forwardRef(({fieldHelpers, name, value, label
 	const [show, setShow] = useState(false);
 
 	const onChange = (event, selectedDate) => {
-		const currentDate = selectedDate || date;
-		setShow(Platform.OS === 'ios');
-		setDate(currentDate);
+		if (selectedDate) {
+			setShow(Platform.OS === 'ios');
+			setDate(selectedDate);
+			fieldHelpers.setValue(selectedDate.toDateString());
+		}
 	};
 
 	const showMode = (currentMode) => {
@@ -29,16 +31,22 @@ const CustomDateTimePicker = React.forwardRef(({fieldHelpers, name, value, label
 	};
 
 	return (
-		<View>
-			<View>
-				<Button onPress={showDatepicker}>Show</Button>
-			</View>
+		<View ref={ref}>
+			<TextInput
+				error={errors && errors[name] ? true : false}
+				name={name}
+				value={value}
+				label={label}
+				editable={false}
+				right={<TextInput.Icon name={'calendar'} onPress={showDatepicker} />}
+				{...props}
+			/>
+
 			{show && (
 				<DateTimePicker
 					testID="dateTimePicker"
 					value={date}
 					mode={mode}
-					is24Hour={true}
 					display="default"
 					onChange={onChange}
 				/>

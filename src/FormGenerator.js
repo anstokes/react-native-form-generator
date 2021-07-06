@@ -38,6 +38,7 @@ class FormGenerator extends Component {
 		// translationHandler: PropTypes.func,
 		theme: PropTypes.object,
 		navigation: PropTypes.object,
+		children: PropTypes.object,
 	}
 
 	state = {
@@ -509,9 +510,9 @@ class FormGenerator extends Component {
 
 						return (
 							<KeyboardAvoidingView
-								enabled={true}
-								behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+								behavior={'padding'}
 								style={{flex: 1}}
+								keyboardVerticalOffset={-200}
 							>
 								<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
 									<ScrollView contentContainerStyle={screenDetails.contentContainerStyle ? StyleSheet.create({...screenDetails.contentContainerStyle}) : {}}>
@@ -724,6 +725,12 @@ class FormGenerator extends Component {
 										})}
 									</View>
 								)}
+								
+								{this.props.children ? (
+									<View>
+										{this.props.children}
+									</View>
+								) : null}
 							</KeyboardAvoidingView>
 						);
 					}}

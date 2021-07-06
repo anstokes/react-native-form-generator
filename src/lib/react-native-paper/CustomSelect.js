@@ -1,7 +1,7 @@
 import React, {useState, Fragment} from 'react';
 import PropTypes from 'prop-types';
-import {ScrollView, StyleSheet, View} from 'react-native';
-import {Button, TextInput, RadioButton, Portal, Dialog} from "react-native-paper";
+import {ScrollView, StyleSheet, Modal, Platform} from 'react-native';
+import {Button, TextInput, RadioButton, Dialog, Portal} from "react-native-paper";
 
 
 const CustomSelect = React.forwardRef(({containerProps, changeHandler, name, value, label, errors, hidden, fieldHelpers, ...props}, ref) => {
@@ -15,8 +15,36 @@ const CustomSelect = React.forwardRef(({containerProps, changeHandler, name, val
 
 	return hidden ? null : (
 		<Fragment>
-			{/* Show dialog with options */}
-			{dialogVisible && (
+			{/* Use native modal for android/ios */}
+			{dialogVisible && Platform.OS !== 'web' && (
+				<Modal
+					transparent={true}
+					visible={dialogVisible}
+					onDismiss={toggleDialogVisible}
+				>
+					<Dialog visible={dialogVisible} style={styles.dialogContainer} onDismiss={toggleDialogVisible}>
+						<Dialog.Title>{label}</Dialog.Title>
+						<Dialog.Content style={styles.dialogContent}>
+							<ScrollView style={styles.listContainer}>
+								<RadioButton.Group name={name} onValueChange={(newValue) => changeHandler(newValue)} value={value}>
+									{props.options.map(elem => {
+										//console.log(elem.name);
+										return (
+											<RadioButton.Item key={elem.value} label={elem.name} value={elem.value} />
+										)
+									})}
+								</RadioButton.Group>
+							</ScrollView>
+						</Dialog.Content>
+						<Dialog.Actions>
+							<Button onPress={toggleDialogVisible} color={theme.colors?.onSurface ?? '#000'}>Done</Button>
+						</Dialog.Actions>
+					</Dialog>
+				</Modal>
+			)}
+			
+			{/* Use portal for web */}
+			{dialogVisible && Platform.OS === 'web' && (
 				<Portal>
 					<Dialog visible={dialogVisible} style={styles.dialogContainer} onDismiss={toggleDialogVisible}>
 						<Dialog.Title>{label}</Dialog.Title>
@@ -46,6 +74,7 @@ const CustomSelect = React.forwardRef(({containerProps, changeHandler, name, val
 				name={name}
 				value={value}
 				label={label}
+				showSoftInputOnFocus={false}	// Does not show keyboard on focus
 				{...props}
 				onFocus={toggleDialogVisible}
 			/>
@@ -60,7 +89,7 @@ const useStyles = (theme) => {
 		dialogContainer: {
 			borderWidth: 2,
 			borderStyle: 'solid',
-			borderColor: theme.colors.primary
+			borderColor: theme.colors.primary,
 		},
 		dialogContent: {
 			backgroundColor: theme.colors.background
