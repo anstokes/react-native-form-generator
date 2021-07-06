@@ -16,7 +16,7 @@ const CustomTitle = React.forwardRef(({children, endReached, canReview, setCurre
 				<IconButton
 					icon={'arrow-right'}
 					size={30}
-					onPress={() => setCurrentScreen('endScreen')}
+					onPress={() => setCurrentScreen('next', 'endScreen')}
 				/>
 			)}
 		</View>

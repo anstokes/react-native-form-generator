@@ -482,7 +482,7 @@ class FormGenerator extends Component {
 	async handleFormSubmit(values) {
 		const {submitHandler, schema, navigation} = this.props;
 		const {currentScreen, previousScreen, formData} = this.state;
-		const navigationRoutes = typeof (navigation?.getDangerouslyState) === 'function' ? navigation.getDangerouslyState().routes.map(route => route.name) : [];
+		const navigationRoutes = typeof (navigation?.dangerouslyGetState) === 'function' ? navigation.dangerouslyGetState().routeNames : [];
 
 		// Run the submit callback with the form data and the updated schema
 		if (currentScreen) {
