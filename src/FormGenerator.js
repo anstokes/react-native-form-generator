@@ -39,12 +39,13 @@ class FormGenerator extends Component {
 		theme: PropTypes.object,
 		navigation: PropTypes.object,
 		children: PropTypes.object,
+		debugMode: PropTypes.bool,
 	}
 
 	state = {
 		appearance: 'react-native-paper',
 		initialScreen: '',
-		previousScreen: '',
+		previousScreen: [],
 		currentScreen: '',
 		screenDetails: {
 			title: null,
@@ -87,6 +88,7 @@ class FormGenerator extends Component {
 		this.handleFormSubmit = this.handleFormSubmit.bind(this);
 		this.getRoute = this.getRoute.bind(this);
 		this.getInitialScreen = this.getInitialScreen.bind(this);
+		this.screenChange = this.screenChange.bind(this);
 	}
 
 	// On mount set the screen details, form properties, validation schema, form data, current screen, and end screen details.
@@ -102,7 +104,7 @@ class FormGenerator extends Component {
 
 			this.setState({
 				initialScreen: initialScreen,
-				previousScreen: initialScreen,
+				previousScreen: [initialScreen],
 				currentScreen: initialScreen,
 				canReview: schema.canReview ? true : false,
 				screenDetails: {
@@ -176,8 +178,43 @@ class FormGenerator extends Component {
 				this.setState(updatedState);
 			}
 		} catch (e) {
-			console.warn('Form generator state changed with warning: ' + e.message);
+			if (this.props.debugMode) {
+				console.warn('Form generator state changed with warning: ' + e.message);
+			}
 		}
+	}
+	
+	
+	screenChange(action, currentValues, screen = false) {
+		const {currentScreen, previousScreen, formData} = this.state;
+		const allData = {...formData, [currentScreen]: {...currentValues}};
+		var newState = {formData: allData};
+						
+		// Keep the form data fresh before changing screen
+		// Support next/back actions via array push/pop
+		switch (action) {
+			case 'submit':
+			case 'next':
+				newState = {
+					...newState,
+					previousScreen: [...previousScreen, currentScreen],
+					currentScreen: screen
+				}
+				break;
+				
+			case 'back':
+				newState = {
+					...newState,
+					previousScreen: previousScreen.slice(0, -1),
+					currentScreen: previousScreen[previousScreen.length - 1]
+				}
+				break;
+		
+			default:
+				break;
+		}
+		
+		this.setState(newState);
 	}
 
 
@@ -212,7 +249,7 @@ class FormGenerator extends Component {
 						}
 					})
 				}
-				else {
+				else if (this.props.debugMode) {
 					console.warn('Failed to prepare screen "' + screenName + '" validation, expected "object" instead got "' + typeof properties[screenName] + '"');
 				}
 
@@ -222,11 +259,11 @@ class FormGenerator extends Component {
 					if ((typeof validationSchema[screenName] === 'object') && (Object.keys(validationSchema[screenName]).length > 0)) {
 						validationSchema[screenName] = new Rules([['object'], ['shape', validationSchema[screenName]]]).toYup();
 					}
-					else {
+					else if (this.props.debugMode) {
 						console.warn('Failed to convert screen "' + screenName + '" validation rules to yup, no validation rules found');
 					}
 				}
-				else {
+				else if (this.props.debugMode) {
 					console.warn('Failed to convert screen "' + screenName + '" validation rules to yup, expected "object" instead got "' + typeof validationSchema[screenName] + '"');
 				}
 			})
@@ -258,12 +295,12 @@ class FormGenerator extends Component {
 						}
 					})
 				}
-				else {
+				else if (this.props.debugMode) {
 					console.warn('Failed to get screen: ' + screenName + ' form data, expected "object" instead got "' + typeof properties[screenName] + '"');
 				}
 			})
 		}
-		else {
+		else if (this.props.debugMode) {
 			console.warn('Failed to get properties form data, expected "object" instead got "' + typeof properties + '"');
 		}
 
@@ -303,7 +340,9 @@ class FormGenerator extends Component {
 			return Object.keys(schema.screens)[0];
 		}
 
-		console.error('Schema initial screen is missing.');
+		if (this.props.debugMode) {
+			console.error('Schema initial screen is missing.');
+		}
 	}
 
 
@@ -322,12 +361,12 @@ class FormGenerator extends Component {
 						formActions[screenName] = {...formActions[screenName], [actionName]: action}
 					});
 				}
-				else {
+				else if (this.props.debugMode) {
 					console.warn('Failed to get screen "' + screenName + '" actions, expected "object" instead got "' + typeof screen.actions + '"');
 				}
 			})
 		}
-		else {
+		else if (this.props.debugMode) {
 			console.warn('Failed to get schema screens actions, expected "object" instead got "' + typeof schema.screens + '"');
 		}
 
@@ -372,7 +411,9 @@ class FormGenerator extends Component {
 			return navigateOnSubmit;
 		}
 		else {
-			console.error('Navigation route could not be determined');
+			if (this.props.debugMode) {
+				console.error('Navigation route could not be determined');
+			}
 			return ['route_error', false];
 		}
 	}
@@ -429,7 +470,9 @@ class FormGenerator extends Component {
 				})
 			}
 		} catch (e) {
-			console.error('Error encountered while getting form properties/groups: ' + (e.message ? e.message : 'No error message'));
+			if (this.props.debugMode) {
+				console.error('Error encountered while getting form properties/groups: ' + (e.message ? e.message : 'No error message'));
+			}
 		}
 
 		return formProperties;
@@ -438,7 +481,8 @@ class FormGenerator extends Component {
 
 	async handleFormSubmit(values) {
 		const {submitHandler, schema, navigation} = this.props;
-		const {currentScreen, formData} = this.state;
+		const {currentScreen, previousScreen, formData} = this.state;
+		const navigationRoutes = typeof (navigation?.getDangerouslyState) === 'function' ? navigation.getDangerouslyState().routes.map(route => route.name) : [];
 
 		// Run the submit callback with the form data and the updated schema
 		if (currentScreen) {
@@ -456,21 +500,27 @@ class FormGenerator extends Component {
 					navigateOnSubmit = this.getRoute(data, navigateOnSubmit);
 				}
 
-				console.log('Submitting form...');
+				if (this.props.debugMode) {
+					console.log('Submitting form...');
+				}
 				await submitHandler(data);
 
 				// Redirect user to screen in form
 				if (typeof navigateOnSubmit == 'string' && Object.keys(schema.screens).includes(navigateOnSubmit)) {
-					console.log('Navigating to form screen named: ' + navigateOnSubmit);
+					if (this.props.debugMode) {
+						console.log('Navigating to form screen named: ' + navigateOnSubmit);
+					}
 
 					this.setState({
-						previousScreen: currentScreen,
-						currentScreen: screen
+						previousScreen: [...previousScreen, currentScreen],
+						currentScreen: navigateOnSubmit
 					})
 				}
-				else {
-					// Otherwise assume that there is a screen with the given name in the app
-					console.log('Navigating to app screen named: ' + navigateOnSubmit);
+				else if (Array.isArray(navigationRoutes) && navigationRoutes.includes(navigateOnSubmit)) {
+					// Otherwise navigate to app route
+					if (this.props.debugMode) {
+						console.log('Navigating to app screen named: ' + navigateOnSubmit);
+					}
 					navigation.navigate(navigateOnSubmit);
 				}
 			}
@@ -499,7 +549,7 @@ class FormGenerator extends Component {
 						const {values, isSubmitting} = form;
 						const {screenDetails, appearance, currentScreen, formActions, formData, customValidation, formProperties, previousScreen, canReview, endReached} = this.state;
 						const {theme, library, schema} = this.props;
-						const screenProperties = formProperties[currentScreen] ? formProperties[currentScreen] : false;					
+						const screenProperties = formProperties[currentScreen] ? formProperties[currentScreen] : false;
 
 						// Return submitting loader
 						if (isSubmitting) {
@@ -524,13 +574,7 @@ class FormGenerator extends Component {
 													key={key}
 													value={screenDetails[key] ? screenDetails[key] : ''}
 													endReached={endReached}
-													setCurrentScreen={(screen) => {
-														// Keep the form data fresh before changing screen
-														this.setState({
-															previousScreen: currentScreen,
-															currentScreen: screen
-														})
-													}}
+													setCurrentScreen={(action, screen) => this.screenChange(action, values, screen)}
 													canReview={canReview}
 													type={key}
 													errors={form.errors}
@@ -550,13 +594,7 @@ class FormGenerator extends Component {
 												appearance={appearance}
 												library={library}
 												formProperties={this.getProperties({...formData, [currentScreen]: values})}
-												setCurrentScreen={(screen) => {
-													// Keep the form data fresh before changing screen
-													this.setState({
-														previousScreen: currentScreen,
-														currentScreen: screen
-													})
-												}}
+												setCurrentScreen={(action, screen) => this.screenChange(action, values, screen)}
 											/>
 										)}
 
@@ -655,7 +693,7 @@ class FormGenerator extends Component {
 														navigateOnSubmit = this.getRoute(allData, navigateOnSubmit);
 													}
 
-													let navigateTo = button.navigateTo ? this.getRoute(allData, button.navigateTo) : previousScreen;
+													let navigateTo = button.navigateTo ? this.getRoute(allData, button.navigateTo) : previousScreen[previousScreen.length - 1];
 
 													return button ? (
 														<ActionButton
@@ -667,14 +705,7 @@ class FormGenerator extends Component {
 																currentScreen,
 																previousScreen,
 															}}
-															setCurrentScreen={(screen) => {
-																// Keep the form data fresh before changing screen
-																this.setState({
-																	formData: allData,
-																	previousScreen: currentScreen,
-																	currentScreen: screen
-																})
-															}}
+															setCurrentScreen={(action, screen) => this.screenChange(action, values, screen)}
 															navigateTo={navigateTo}
 															label={button.label ? button.label : 'Missing Label'}
 															library={library ? library : {}}
@@ -707,12 +738,7 @@ class FormGenerator extends Component {
 														currentScreen,
 														previousScreen,
 													}}
-													setCurrentScreen={(screen) => {
-														// Keep the form data fresh before changing screen
-														setFormData(allData)
-														setPreviousScreen(currentScreen);
-														setCurrentScreen(screen)
-													}}
+													setCurrentScreen={(action, screen) => this.screenChange(action, values, screen)}
 													navigateTo={button.navigateTo ? button.navigateTo : () => this.getRoute(allData, navigateOnSubmit)}
 													label={button.label ? button.label : 'Missing Label'}
 													library={library ? library : {}}

@@ -21,7 +21,7 @@ const ReviewGroup = ({fields, title, screenName, theme, setCurrentScreen}) => {
 
 						{/* Edit screen button */}
 						{setCurrentScreen && (
-							<Button mode={'text'} onPress={() => setCurrentScreen(screenName)} compact={true} color={theme.colors.button.primary}>{label}</Button>
+							<Button mode={'text'} onPress={() => setCurrentScreen('next', screenName)} compact={true} color={theme.colors.button.primary}>{label}</Button>
 						)}
 					</View>
 
