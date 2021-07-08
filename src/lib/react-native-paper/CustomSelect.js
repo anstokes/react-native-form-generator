@@ -1,6 +1,6 @@
 import React, {useState, Fragment} from 'react';
 import PropTypes from 'prop-types';
-import {ScrollView, StyleSheet, Modal, Platform} from 'react-native';
+import {ScrollView, StyleSheet, Modal, Platform, Keyboard} from 'react-native';
 import {Button, TextInput, RadioButton, Dialog, Portal} from "react-native-paper";
 
 
@@ -8,21 +8,42 @@ const CustomSelect = React.forwardRef(({containerProps, changeHandler, name, val
 	const {theme} = props;
 	const styles = useStyles(theme);
 	const [dialogVisible, setDialogVisible] = useState(false);
-
+	const [modalVisible, setModalVisible] = useState(false);
+	const [textInput, setTextInput] = useState(null);
+	
 	const toggleDialogVisible = () => {
-		setDialogVisible(!dialogVisible);
+		const visible = !dialogVisible;
+		if (visible) {
+			setModalVisible(true);
+		}
+		setDialogVisible(visible);
+		hideKeyboard();
+	}
+	
+	const toggleModalVisible = () => {
+		setModalVisible(!modalVisible);
+		setDialogVisible(!modalVisible);
+		hideKeyboard();
+	}
+	
+	const hideKeyboard = () => {
+		//Keyboard.dismiss();		// Clear focus from all text elements and hides keyboard	
+		if (textInput) {
+			textInput.blur();
+		}
 	}
 
 	return hidden ? null : (
 		<Fragment>
 			{/* Use native modal for android/ios */}
-			{dialogVisible && Platform.OS !== 'web' && (
+			{modalVisible && Platform.OS !== 'web' && (
 				<Modal
 					transparent={true}
-					visible={dialogVisible}
-					onDismiss={toggleDialogVisible}
+					visible={modalVisible}
+					// onDismiss={toggleModalVisible}		// Function triggered once the modal has been dismissed (visible prop has changed)
+					onRequestClose={toggleModalVisible}		// Function triggered by the device "Back" action
 				>
-					<Dialog visible={dialogVisible} style={styles.dialogContainer} onDismiss={toggleDialogVisible}>
+					<Dialog visible={modalVisible} style={styles.dialogContainer} onDismiss={toggleModalVisible}>
 						<Dialog.Title>{label}</Dialog.Title>
 						<Dialog.Content style={styles.dialogContent}>
 							<ScrollView style={styles.listContainer}>
@@ -37,7 +58,7 @@ const CustomSelect = React.forwardRef(({containerProps, changeHandler, name, val
 							</ScrollView>
 						</Dialog.Content>
 						<Dialog.Actions>
-							<Button onPress={toggleDialogVisible} color={theme.colors?.onSurface ?? '#000'}>Done</Button>
+							<Button onPress={toggleModalVisible} color={theme.colors?.onSurface ?? '#000'}>Done</Button>
 						</Dialog.Actions>
 					</Dialog>
 				</Modal>
@@ -69,19 +90,19 @@ const CustomSelect = React.forwardRef(({containerProps, changeHandler, name, val
 
 			{/* The text input with the selected value */}
 			<TextInput
-				ref={ref}
+				ref={setTextInput}
 				error={errors && errors[name] ? true : false}
 				name={name}
 				value={value}
 				label={label}
 				showSoftInputOnFocus={false}	// Does not show keyboard on focus
-				{...props}
+				editable={false}
 				onFocus={toggleDialogVisible}
+				{...props}
 			/>
 		</Fragment>
-
 	);
-})
+});
 
 
 const useStyles = (theme) => {
