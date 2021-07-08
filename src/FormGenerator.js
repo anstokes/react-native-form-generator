@@ -145,10 +145,10 @@ class FormGenerator extends Component {
             
             // Ensure form updates when schema changes
             if (!isEqual(prevProps.schema, schema)) {
-				debounce(this.componentDidMount);
+				debounce(this.componentDidMount, this);
                 // this.componentDidMount();
                 if (this._formikRef.current && typeof (this._formikRef.current.validateForm) === 'function') {
-					debounce(this._formikRef.current.validateForm);
+					debounce(this._formikRef.current.validateForm, this);
                 }
             }
 

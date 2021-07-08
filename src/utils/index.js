@@ -4,7 +4,7 @@
  * 
  * @param {Array} dataArray 
  */
- export const ensureFunctionAndRegex = (dataArray) => {
+export const ensureFunctionAndRegex = (dataArray) => {
     if (Array.isArray(dataArray)) {
         dataArray.forEach((elem, index) => {
             // Find the element which has the regex object
@@ -49,15 +49,16 @@
 /**
  * Function calls the provided callback with a delay, can be used to avoid unnecessary calls.
  * 
- * @param {Function} callback   :The callback function
- * @param {Number} delay        :The delay in ms
+ * @param {Function} callback   :The callback function  (required)
+ * @param context               :The contex of the function (required)
+ * @param {Number} delay        :The delay in ms (default 500ms)
  * @returns 
  */
- export const debounce = (callback, delay = 500) => {
+ export const debounce = (callback, context, delay = 500) => {
     let delayedFunction;
     
     return (...args) => {
         clearTimeout(delayedFunction);
-        delayedFunction = setTimeout(() => { callback.apply(this, args); }, delay);;
+        delayedFunction = setTimeout(() => { callback.apply(context, args); }, delay);;
     }
 }
