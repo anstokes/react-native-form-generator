@@ -13,6 +13,7 @@ import Rules from "@flipbyte/yup-schema";
 // Import: Utilities
 import {
 	ensureFunctionAndRegex,
+	debounce
 } from './utils';
 
 // Import: Components
@@ -20,6 +21,7 @@ import FieldElement from './FieldElement';
 import ActionButton from './ActionButton';
 import TextElement from './TextElement';
 import ScreenElement from './ScreenElement';
+import LoaderElement from './LoaderElement';
 
 
 const supportedAppearances = ['react-native-paper'];
@@ -143,9 +145,10 @@ class FormGenerator extends Component {
             
             // Ensure form updates when schema changes
             if (!isEqual(prevProps.schema, schema)) {
-                this.componentDidMount();
-                if (this._formikRef.current) {
-                    setTimeout(() => {this._formikRef.current.validateForm()});
+				debounce(this.componentDidMount);
+                // this.componentDidMount();
+                if (this._formikRef.current && typeof (this._formikRef.current.validateForm) === 'function') {
+					debounce(this._formikRef.current.validateForm);
                 }
             }
 
@@ -254,9 +257,9 @@ class FormGenerator extends Component {
 				}
 
 				// Convert the validation rules to yup rules
-				if ((typeof validationSchema[screenName] === 'object') || (typeof validationSchema[screenName] === 'undefined')) {
+				if (typeof validationSchema[screenName] === 'object') {
 					// Only convert if there are validation rules for the current screen
-					if ((typeof validationSchema[screenName] === 'object') && (Object.keys(validationSchema[screenName]).length > 0)) {
+					if (Object.keys(validationSchema[screenName]).length) {
 						validationSchema[screenName] = new Rules([['object'], ['shape', validationSchema[screenName]]]).toYup();
 					}
 					else if (this.props.debugMode) {
@@ -551,10 +554,16 @@ class FormGenerator extends Component {
 						const {theme, library, schema} = this.props;
 						const screenProperties = formProperties[currentScreen] ? formProperties[currentScreen] : false;
 
-						// Return submitting loader
+						// Return submitting loader/text
 						if (isSubmitting) {
 							return (
-								<Text>Submitting...</Text>
+								<LoaderElement 
+									type={'loader'} 
+									subTitle={'Submitting'}
+									library={library}
+									theme={theme}
+									appearance={appearance}
+								/>
 							)
 						}
 
