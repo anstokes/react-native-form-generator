@@ -5,52 +5,58 @@ import PropTypes from 'prop-types'
 import {View, Platform} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 
 const CustomDateTimePicker = React.forwardRef(({fieldHelpers, name, value, label, errors, hidden, ...props}, ref) => {
 	const [date, setDate] = useState(new Date());
 	const [mode, setMode] = useState('date');
 	const [show, setShow] = useState(false);
+	const [type, setType] = useState('default');
 
 	const onChange = (event, selectedDate) => {
 		if (selectedDate) {
-			setShow(Platform.OS === 'ios');
+			setShow(false)
 			setDate(selectedDate);
 			fieldHelpers.setValue(selectedDate.toDateString());
 		}
+		else {
+			setShow(false);
+		}
 	};
-
-	const showMode = (currentMode) => {
+	
+	const showMode = (mode, type) => {
+		setType(type);
+		setMode(mode);
 		setShow(true);
-		setMode(currentMode);
-	};
-
-	const showDatepicker = () => {
-		showMode('date');
-		setShow(true);
-	};
+	}
+	
+	const showDatePicker = () => {
+		showMode('date', 'calendar');
+	}
 
 	return (
 		<View ref={ref}>
-			<TextInput
-				error={errors && errors[name] ? true : false}
-				name={name}
-				value={value}
-				label={label}
-				editable={false}
-				right={<TextInput.Icon name={'calendar'} onPress={showDatepicker} />}
-				{...props}
-			/>
+			<TouchableOpacity onPressIn={showDatePicker}>
+				<TextInput
+					error={errors && errors[name] ? true : false}
+					name={name}
+					value={value}
+					label={label}
+					editable={false}
+					{...props}
+				/>
+			</TouchableOpacity>
 
-			{show && (
+			{show ? (
 				<DateTimePicker
-					testID="dateTimePicker"
+					testID={"dateTimePicker"}
 					value={date}
 					mode={mode}
-					display="default"
+					display={type}
 					onChange={onChange}
 				/>
-			)}
+			) : null}
 		</View>
 	);
 })
