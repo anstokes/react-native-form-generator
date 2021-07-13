@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
 
 // Import: Components
@@ -13,6 +13,12 @@ const CustomDateTimePicker = React.forwardRef(({fieldHelpers, name, value, label
 	const [mode, setMode] = useState('date');
 	const [show, setShow] = useState(false);
 	const [type, setType] = useState('default');
+	
+	useEffect(() => {
+		if (value !== '') {
+			setDate(new Date(value));
+		}
+	}, [value])
 
 	const onChange = (event, selectedDate) => {
 		if (selectedDate) {
