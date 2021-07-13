@@ -549,7 +549,7 @@ class FormGenerator extends Component {
 					validateOnMount={typeof validateOnMount === 'undefined' ? true : validateOnMount}
 				>
 					{(form) => {
-						const {values, isSubmitting} = form;
+						const {values, isSubmitting, isValidating} = form;
 						const {screenDetails, appearance, currentScreen, formActions, formData, customValidation, formProperties, previousScreen, canReview, endReached} = this.state;
 						const {theme, library, schema} = this.props;
 						const screenProperties = formProperties[currentScreen] ? formProperties[currentScreen] : false;
@@ -567,7 +567,7 @@ class FormGenerator extends Component {
 							)
 						}
 
-						return (
+						return isValidating ? null : (
 							<KeyboardAvoidingView
 								behavior={'padding'}
 								style={{flex: 1}}
