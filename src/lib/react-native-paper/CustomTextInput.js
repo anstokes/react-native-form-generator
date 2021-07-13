@@ -11,7 +11,7 @@ const CustomTextInput = React.forwardRef(({containerProps, changeHandler, name, 
 			ref={ref}
 			error={errors && errors[name] ? true : false}
 			name={name}
-			value={value}
+			value={value + ''}
 			label={label}
 			{...props}
 			onChangeText={(value) => changeHandler(value)}
