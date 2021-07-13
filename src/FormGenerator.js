@@ -290,11 +290,11 @@ class FormGenerator extends Component {
 						if (property.type && property.type == 'group' && property.properties) {
 							Object.keys(property.properties).forEach(groupedPropertyName => {
 								const groupedProperty = property.properties[groupedPropertyName];
-								formData[screenName] = {...formData[screenName], [groupedPropertyName]: (groupedProperty.value ? groupedProperty.value : '')};
+								formData[screenName] = {...formData[screenName], [groupedPropertyName]: (typeof (groupedProperty.value) !== 'undefined' ? groupedProperty.value : '')};
 							})
 						}
 						else {
-							formData[screenName] = {...formData[screenName], [fieldName]: (property.value ? property.value : '')}
+							formData[screenName] = {...formData[screenName], [fieldName]: (typeof (property.value) !== 'undefined' ? property.value : '')}
 						}
 					})
 				}
@@ -653,7 +653,7 @@ class FormGenerator extends Component {
 																	type={type}
 																	name={name}
 																	label={label}
-																	value={values[name] ? values[name] : ''}
+																	value={typeof(values[name]) !== 'undefined' ? values[name] : ''}
 																	errors={form.errors}
 																	customValidation={customValidation[currentScreen] ? customValidation[currentScreen] : {}}
 																	library={library}
@@ -676,7 +676,7 @@ class FormGenerator extends Component {
 														type={type}
 														name={name}
 														label={label}
-														value={values[name] ? values[name] : ''}
+														value={typeof(values[name]) !== 'undefined' ? values[name] : ''}
 														errors={form.errors}
 														customValidation={customValidation[currentScreen] ? customValidation[currentScreen] : {}}
 														library={library}
