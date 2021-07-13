@@ -9,7 +9,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 
 
 const CustomDateTimePicker = React.forwardRef(({fieldHelpers, name, value, label, errors, hidden, ...props}, ref) => {
-	const [date, setDate] = useState(new Date(value ?? null));
+	const [date, setDate] = useState(value !== '' ? new Date(value) : new Date());
 	const [mode, setMode] = useState('date');
 	const [show, setShow] = useState(false);
 	const [type, setType] = useState('default');
