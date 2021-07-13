@@ -26,6 +26,7 @@ const CustomDateTimePicker = React.forwardRef(({fieldHelpers, name, value, label
 	};
 	
 	const showMode = (mode, type) => {
+		type = Platform.OS === 'ios' ? 'spinner' : type;
 		setType(type);
 		setMode(mode);
 		setShow(true);
