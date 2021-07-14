@@ -567,7 +567,7 @@ class FormGenerator extends Component {
 							)
 						}
 
-						return isValidating ? null : (
+						return (
 							<KeyboardAvoidingView
 								behavior={'padding'}
 								style={{flex: 1}}
