@@ -1,10 +1,6 @@
 {
   "name": "react-native-form-generator",
   "version": "2021.2.12",
-  "repository": {
-    "type": "scm",
-    "url": "https://scm.anstech.co.uk/scm/repo/astokes/react-native-form-generator"
-  },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
