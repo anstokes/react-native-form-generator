@@ -21,7 +21,9 @@ const ReviewGroup = ({fields, title, screenName, theme, setCurrentScreen}) => {
 
 						{/* Edit screen button */}
 						{setCurrentScreen && (
-							<Button mode={'text'} onPress={() => setCurrentScreen('next', screenName)} compact={true} color={theme.colors.button.primary}>{label}</Button>
+							<View style={styles.title_button}>
+								<Button mode={'text'} onPress={() => setCurrentScreen('next', screenName)} compact={true} color={theme.colors.button.primary}>{label}</Button>
+							</View>
 						)}
 					</View>
 
@@ -107,8 +109,12 @@ const useStyles = (theme) => (StyleSheet.create({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 	},
+	title_button: {
+		flexShrink: 0
+	},
 	title: {
-		padding: 8
+		padding: 8,
+		flexShrink: 1
 	},
 	row_wrapper: {
 		display: 'flex',
