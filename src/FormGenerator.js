@@ -92,6 +92,7 @@ class FormGenerator extends Component {
 		this.getInitialScreen = this.getInitialScreen.bind(this);
 		this.screenChange = this.screenChange.bind(this);
 		this.backAction = this.backAction.bind(this);
+		BackHandler.removeEventListener('hardwareBackPress', this.backAction);
 	}
 
 	// On mount set the screen details, form properties, validation schema, form data, current screen, and end screen details.
