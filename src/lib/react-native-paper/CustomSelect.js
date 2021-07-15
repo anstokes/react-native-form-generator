@@ -43,7 +43,7 @@ const CustomSelect = React.forwardRef(({containerProps, changeHandler, name, val
 					// onDismiss={toggleModalVisible}		// Function triggered once the modal has been dismissed (visible prop has changed)
 					onRequestClose={toggleModalVisible}		// Function triggered by the device "Back" action
 				>
-					<Dialog visible={modalVisible} style={styles.dialogContainer} onDismiss={toggleModalVisible}>
+					<Dialog visible={modalVisible} style={styles.dialogContainer} dismissable={false} onDismiss={toggleModalVisible}>
 						<Dialog.Title>{label}</Dialog.Title>
 						<Dialog.Content style={styles.dialogContent}>
 							<ScrollView style={styles.listContainer}>
@@ -96,9 +96,8 @@ const CustomSelect = React.forwardRef(({containerProps, changeHandler, name, val
 				value={value}
 				label={label}
 				showSoftInputOnFocus={false}	// Does not show keyboard on focus
-				editable={false}
-				onFocus={toggleDialogVisible}
 				{...props}
+				onFocus={toggleDialogVisible}
 			/>
 		</Fragment>
 	);
