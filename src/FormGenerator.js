@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {ScrollView, View, Keyboard, TouchableWithoutFeedback, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
+import {ScrollView, View, Keyboard, TouchableWithoutFeedback, StyleSheet, KeyboardAvoidingView, BackHandler, Platform} from 'react-native';
 import {Text, Provider as PaperProvider} from 'react-native-paper';
 import PropTypes from 'prop-types';
 
@@ -91,6 +91,7 @@ class FormGenerator extends Component {
 		this.getRoute = this.getRoute.bind(this);
 		this.getInitialScreen = this.getInitialScreen.bind(this);
 		this.screenChange = this.screenChange.bind(this);
+		this.backAction = this.backAction.bind(this);
 	}
 
 	// On mount set the screen details, form properties, validation schema, form data, current screen, and end screen details.
@@ -103,6 +104,11 @@ class FormGenerator extends Component {
 			let formData = this.getFormData(properties);
 			let screenTitle = schema.screens[initialScreen] && schema.screens[initialScreen].title;
 			let screenDescription = schema.screens[initialScreen] && schema.screens[initialScreen].description;
+			
+			// Use the backAction handler to handle the hardware "back" action (android only)
+			if (Platform.OS === 'android') {
+				BackHandler.addEventListener('hardwareBackPress', this.backAction);
+			}
 
 			this.setState({
 				initialScreen: initialScreen,
@@ -187,9 +193,28 @@ class FormGenerator extends Component {
 		}
 	}
 	
+	componentWillUnmount() {
+		BackHandler.removeEventListener('hardwareBackPress', this.backAction);
+	}
 	
-	screenChange(action, currentValues, screen = false) {
+	/**
+	 *  The back handler attaches to the "hardwareBackPress" event.
+	 *	Returning false will allow the default navigation to work.
+	 * @returns {Boolean}
+	 */
+	 backAction() {
+		// If current screen is the initial one then allow the default "back" action
+		if (this.state.currentScreen === this.state.initialScreen) {
+			return false;
+		}
+		
+		this.screenChange('back');
+		return true;
+	}
+	
+	screenChange(action, screen = false) {
 		const {currentScreen, previousScreen, formData} = this.state;
+		const currentValues = this._formikRef?.current?.values ?? {};
 		const allData = {...formData, [currentScreen]: {...currentValues}};
 		var newState = {formData: allData};
 						
@@ -583,7 +608,7 @@ class FormGenerator extends Component {
 													key={key}
 													value={screenDetails[key] ? screenDetails[key] : ''}
 													endReached={endReached}
-													setCurrentScreen={(action, screen) => this.screenChange(action, values, screen)}
+													setCurrentScreen={(action, screen) => this.screenChange(action, screen)}
 													canReview={canReview}
 													type={key}
 													errors={form.errors}
@@ -603,7 +628,7 @@ class FormGenerator extends Component {
 												appearance={appearance}
 												library={library}
 												formProperties={this.getProperties({...formData, [currentScreen]: values})}
-												setCurrentScreen={(action, screen) => this.screenChange(action, values, screen)}
+												setCurrentScreen={(action, screen) => this.screenChange(action, screen)}
 											/>
 										)}
 
@@ -714,7 +739,7 @@ class FormGenerator extends Component {
 																currentScreen,
 																previousScreen,
 															}}
-															setCurrentScreen={(action, screen) => this.screenChange(action, values, screen)}
+															setCurrentScreen={(action, screen) => this.screenChange(action, screen)}
 															navigateTo={navigateTo}
 															label={button.label ? button.label : 'Missing Label'}
 															library={library ? library : {}}
@@ -747,7 +772,7 @@ class FormGenerator extends Component {
 														currentScreen,
 														previousScreen,
 													}}
-													setCurrentScreen={(action, screen) => this.screenChange(action, values, screen)}
+													setCurrentScreen={(action, screen) => this.screenChange(action, screen)}
 													navigateTo={button.navigateTo ? button.navigateTo : () => this.getRoute(allData, navigateOnSubmit)}
 													label={button.label ? button.label : 'Missing Label'}
 													library={library ? library : {}}
