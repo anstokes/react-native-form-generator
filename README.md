@@ -14,21 +14,26 @@ The schema is a JSON schema, and it has the following properties:
 
 Key  | Description | Type
 ---- | :----------- | :--------:
-initialScreen | The key of the screen that is initially shown    | String
-screens       | Object with screens ("screen1": {...properties}) | Object
+initialScreen | The key of the screen that is initially shown    														| String
+screens       | Object with screens ("screen1": {...properties}) 														| Object
+canReview	  | Requires screen under "endScreen" key to be set. It will show the review screen if true	| Boolean		| Boolean
+children	  | Object with components to be shown at the end of the form generator										| Object
+theme		  | Theme object to pass to the paper react native paper provider wrapping the form generator				| Object
+navigation	  | "React navigation" object used for navigatin outside of the form generator screens						| Object
+debugMode	  | Turning this on will display a more detailed console output												| Boolean
 
 
 - Each screen in the screens object can have the following:
 
 Key                   | Description  | Type               | Required
 :-------------------: | :----------- | :----------------: | :------:
-title                 | The title of the current form screen, optional.                    	| String           | False
-description           | The description of the current form screen. optional               	| String           | False
-navigateOnSubmit      | String or Object to redirect on submit, see paginatedSchemaExample.	| String or Object | False
-contentContainerStyle | Style for the entire form elements wrapper 													| Object           | False
-alwaysShowActions     | If true then it will render the actions outside of the scrollView  	| Boolean          | False
-actions               | Object with actions for the current screen. 												| Object           | True
-properties            | Object with form elements. 																					| Object 					 | True
+title                 | The title of the current form screen, optional.                    											| String           	| False
+description           | The description of the current form screen. optional               											| String           	| False
+navigateOnSubmit      | String or Object to redirect on submit, see paginatedSchemaExample											| String or Object 	| False
+contentContainerStyle | Style for the entire form elements wrapper 																	| Object           	| False
+alwaysShowActions     | If true then it will render the actions outside of the scrollView  											| Boolean          	| False
+actions               | Object with actions for the current screen. 																| Object           	| True
+properties            | Object with form elements. 																					| Object 			| True
 
 If a custom end screen is required to handle the final submit, or to display some information to the user, then it should be included with the "end" key. The redirect to this screen can be handled in the navigateOnSubmit, or the "navigateTo" property of action buttons. 
 
@@ -37,11 +42,21 @@ If a custom end screen is required to handle the final submit, or to display som
 
 Key         | Description   | Type       | Required
 :---------- | :------------ | :--------: | :------:
-type   			| The type of the action button, should match the component in the library. | String | True
-action 			| The action name which is passed to the handler. 													| String | True
-label  			| The label of the action button. 																					| Object | True
+type   		| The type of the action button, should match the component in the library. | String | True
+action 		| The action name which is passed to the handler. 							| String / Object | True
+label  		| The label of the action button. 																					| Object | True
 navigateTo 	| The name of the screen to navigate to on button press. If no "navigateTo" is provided then the "navigateOnSubmit" will be used to get the redirect screen. | String | False
-props  			| Any other objects which are passed to the custom component. 							| Object | False
+props  		| Any other objects which are passed to the custom component. 							| Object | False
+
+The action property can also be an object used to get the next screen to navigate to:
+```
+action: {
+	function: {
+		args: ["data"],
+		body: "return data.screenName.property == 'test' ? 'screen1Name' : screen2Name;"
+	}
+}
+```
 
 - Each property in the properties object can have the following:
 
