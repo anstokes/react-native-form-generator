@@ -406,7 +406,7 @@ class FormGenerator extends Component {
 	getRoute(data, navigateOnSubmit) {
 		if (navigateOnSubmit) {
 			// Get the "function" result if found in data
-			if (Object.keys(navigateOnSubmit)[0] && Object.keys(navigateOnSubmit)[0] == 'function') {
+			if (typeof navigateOnSubmit === 'object' && navigateOnSubmit.function && navigateOnSubmit.function.args && navigateOnSubmit.function.body) {
 				let newFunc = new Function(navigateOnSubmit.function.args, navigateOnSubmit.function.body);
 				if (typeof newFunc === 'function') {
 					navigateOnSubmit = newFunc(data);
