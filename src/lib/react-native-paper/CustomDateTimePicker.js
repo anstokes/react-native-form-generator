@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 // Import: Components
 import {View, Platform} from 'react-native';
-import {Button, TextInput} from 'react-native-paper';
+import {Button, TextInput, useTheme} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
@@ -13,6 +13,7 @@ const CustomDateTimePicker = React.forwardRef(({fieldHelpers, name, value, label
 	const [mode, setMode] = useState('date');
 	const [show, setShow] = useState(false);
 	const [type, setType] = useState('default');
+	const theme = useTheme();
 	
 	useEffect(() => {
 		if (value !== '') {
@@ -62,6 +63,7 @@ const CustomDateTimePicker = React.forwardRef(({fieldHelpers, name, value, label
 					mode={mode}
 					display={type}
 					onChange={onChange}
+					themeVariant={theme && theme.dark ? 'dark' : 'light'}
 				/>
 			) : null}
 		</View>
