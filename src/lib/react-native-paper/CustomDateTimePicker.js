@@ -40,7 +40,7 @@ const CustomDateTimePicker = React.forwardRef(({fieldHelpers, name, value, label
 	}
 	
 	const showDatePicker = () => {
-		showMode('date', 'calendar');
+		showMode('date', 'default');
 	}
 
 	return (
